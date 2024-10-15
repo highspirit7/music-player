@@ -1,25 +1,72 @@
+import { useEffect, useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
-import {
-  Heart,
-  Library,
-  ListMusic,
-  Plus,
-  Repeat,
-  Shuffle,
-  SkipBack,
-  SkipForward,
-  Volume2,
-} from 'lucide-react';
+import { Heart, Library, Plus } from 'lucide-react';
+import toMinutesAndSeconds from './utils/toMinuteAndSeconds';
+import BottomControlBar from './components/BottomControlBar';
+
+type Track = {
+  id: string;
+  name: string;
+  duration: number;
+  artist_id: string;
+  artist_name: string;
+  artist_idstr: string;
+  album_name: string;
+  album_id: string;
+  license_ccurl: string;
+  position: number;
+  releasedate: string;
+  album_image: string;
+  audio: string;
+  audiodownload: string;
+  prourl: string;
+  shorturl: string;
+  shareurl: string;
+  waveform: string;
+  image: string;
+  audiodownload_allowed: boolean;
+};
 
 export default function App() {
+  const [tracks, setTracks] = useState<Track[]>([]);
+  const [selectedTrack, setSelectedTrack] = useState<Track>();
+
+  useEffect(() => {
+    async function getTracks(): Promise<Track[] | undefined> {
+      try {
+        const response = await fetch(
+          'https://api.jamendo.com/v3.0/tracks/?client_id=399f3217&format=jsonpretty&datebetween=2012-01-01_2024-01-01&limit=20'
+        );
+
+        const data = await response.json();
+
+        return data.results;
+      } catch (error) {
+        console.error(error);
+        return;
+      }
+    }
+
+    const fetchTracks = async () => {
+      const tracks = await getTracks();
+      if (tracks) setTracks(tracks);
+    };
+
+    fetchTracks(); // Call the async function
+  }, []);
+
+  function handleTrackClick(track: Track) {
+    setSelectedTrack(track);
+  }
+
   return (
-    <div className="h-screen flex flex-col bg-stone-600 text-neutral-100">
+    <div className="h-screen flex flex-col">
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar */}
-        <aside className="w-64 bg-card p-6 hidden md:block border-r border-border">
+        <aside className="w-56 p-6 hidden md:block border-r border-border">
           <h1 className="text-2xl font-bold mb-6 text-primary">TC-Music</h1>
           <nav className="space-y-4">
             <a
@@ -67,84 +114,37 @@ export default function App() {
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-auto p-6 bg-background">
-          <h1 className="text-2xl font-bold mb-6">Your Music</h1>
-          <div className="grid gap-4">
-            {[1, 2, 3, 4, 5].map(i => (
+        <main className="flex-1 overflow-auto bg-background">
+          <div className="sticky top-0 p-4 border-b border-border z-50 bg-background">
+            <h1 className="text-2xl font-bold">Your Music</h1>
+          </div>
+          <div className="grid gap-4 p-4">
+            {tracks.map(track => (
               <div
-                key={i}
+                key={track.id}
                 className="flex items-center space-x-4 p-2 hover:bg-accent rounded-md"
               >
                 <img
-                  src={`/placeholder.svg?height=40&width=40&text=Cover`}
+                  src={track.image}
                   alt="Album cover"
-                  className="w-10 h-10 rounded bg-muted"
+                  className="w-10 h-10 rounded bg-muted cursor-pointer"
+                  onClick={() => handleTrackClick(track)}
                 />
                 <div className="flex-1">
-                  <h3 className="font-medium">Song Title {i}</h3>
-                  <p className="text-sm text-muted-foreground">Artist Name</p>
+                  <h3 className="font-medium">{track.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {track.artist_name}
+                  </p>
                 </div>
-                <span className="text-sm text-muted-foreground">3:45</span>
+                <span className="text-sm text-muted-foreground">
+                  {toMinutesAndSeconds(track.duration)}
+                </span>
               </div>
             ))}
           </div>
         </main>
       </div>
-
-      {/* Bottom Control Bar */}
-      <footer className="h-20 border-t bg-stone-700 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <img
-              src="/placeholder.svg?height=48&width=48&text=Cover"
-              alt="Now playing"
-              className="w-12 h-12 rounded bg-muted"
-            />
-            <div>
-              <h3 className="font-medium">Current Song</h3>
-              <p className="text-sm text-muted-foreground">Current Artist</p>
-            </div>
-          </div>
-          <div className="flex flex-col items-center space-y-2 flex-1 max-w-md">
-            <div className="flex items-center space-x-4">
-              <Button size="icon" variant="ghost">
-                <Shuffle className="h-4 w-4" />
-                <span className="sr-only">Shuffle</span>
-              </Button>
-              <Button size="icon" variant="ghost">
-                <SkipBack className="h-4 w-4" />
-                <span className="sr-only">Previous</span>
-              </Button>
-              <Button size="icon" className="h-10 w-10">
-                <ListMusic className="h-5 w-5" />
-                <span className="sr-only">Play</span>
-              </Button>
-              <Button size="icon" variant="ghost">
-                <SkipForward className="h-4 w-4" />
-                <span className="sr-only">Next</span>
-              </Button>
-              <Button size="icon" variant="ghost">
-                <Repeat className="h-4 w-4" />
-                <span className="sr-only">Repeat</span>
-              </Button>
-            </div>
-            <div className="flex items-center space-x-2 w-full">
-              <span className="text-sm text-muted-foreground">1:23</span>
-              <Slider
-                defaultValue={[33]}
-                max={100}
-                step={1}
-                className="w-full"
-              />
-              <span className="text-sm text-muted-foreground">3:45</span>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Volume2 className="h-5 w-5 text-muted-foreground" />
-            <Slider defaultValue={[50]} max={100} step={1} className="w-24" />
-          </div>
-        </div>
-      </footer>
+      {selectedTrack && <BottomControlBar track={selectedTrack} />}
     </div>
   );
 }
