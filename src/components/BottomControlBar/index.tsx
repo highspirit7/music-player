@@ -1,4 +1,3 @@
-import { Howl } from 'howler';
 import {
   Play,
   Pause,
@@ -8,60 +7,16 @@ import {
   SkipForward,
   Volume2,
 } from 'lucide-react';
-import { useEffect, useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import toMinutesAndSeconds from '@/utils/toMinuteAndSeconds';
+import { SelectedTrack, useStore } from '@/store';
 
-type Track = {
-  id: string;
-  name: string;
-  duration: number;
-  artist_id: string;
-  artist_name: string;
-  artist_idstr: string;
-  album_name: string;
-  album_id: string;
-  license_ccurl: string;
-  position: number;
-  releasedate: string;
-  album_image: string;
-  audio: string;
-  audiodownload: string;
-  prourl: string;
-  shorturl: string;
-  shareurl: string;
-  waveform: string;
-  image: string;
-  audiodownload_allowed: boolean;
-};
-
-function BottomControlBar({ track }: { track: Track }) {
-  const soundRef = useRef<Howl | null>(null);
-
-  function handlePlayClick() {
-    soundRef.current?.play();
-  }
-
-  function handlePauseClick() {
-    soundRef.current?.pause();
-  }
-
-  useEffect(() => {
-    function initializeSound() {
-      soundRef.current = new Howl({
-        src: [track.audiodownload], // Replace with your file URL
-        html5: true, // Set to true to force HTML5 Audio (useful for large files or mobile devices)
-      });
-    }
-
-    initializeSound();
-
-    return () => {
-      soundRef.current?.pause();
-    };
-  }, [track.audiodownload]);
+function BottomControlBar({ track }: { track: SelectedTrack }) {
+  const isPlaying = useStore(state => state.isPlaying);
+  const playTrack = useStore(state => state.playTrack);
+  const pauseTrack = useStore(state => state.pauseTrack);
 
   return (
     <footer className="h-20 border-t bg-stone-700 p-4">
@@ -74,9 +29,7 @@ function BottomControlBar({ track }: { track: Track }) {
           />
           <div>
             <h3 className="font-medium">{track.name}</h3>
-            <p className="text-sm text-muted-foreground">
-              {track?.artist_name ?? '-'}
-            </p>
+            <p className="text-sm text-muted-foreground">{track.artist_name}</p>
           </div>
         </div>
         <div className="flex flex-col items-center space-y-2 flex-1 max-w-md">
@@ -89,17 +42,19 @@ function BottomControlBar({ track }: { track: Track }) {
               <SkipBack className="h-4 w-4" />
               <span className="sr-only">Previous</span>
             </Button>
-            <Button size="icon" className="h-10 w-10" onClick={handlePlayClick}>
-              <Play className="h-5 w-5" />
-              <span className="sr-only">Play</span>
-            </Button>
             <Button
               size="icon"
+              variant="ghost"
               className="h-10 w-10"
-              onClick={handlePauseClick}
+              onClick={isPlaying ? pauseTrack : playTrack}
             >
-              <Pause className="h-5 w-5" />
-              <span className="sr-only">Pause</span>
+              {isPlaying ? (
+                <Pause className="h-5 w-5" />
+              ) : (
+                <Play className="h-5 w-5" />
+              )}
+
+              <span className="sr-only">{isPlaying ? 'Pause' : 'Play'}</span>
             </Button>
             <Button size="icon" variant="ghost">
               <SkipForward className="h-4 w-4" />
