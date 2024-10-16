@@ -1,6 +1,7 @@
 import { Howl } from 'howler';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { devtools } from 'zustand/middleware';
 
 import { assertError } from '@/utils/errors';
 
@@ -48,74 +49,76 @@ interface State {
 }
 
 export const useStore = create<State>()(
-  immer(set => ({
-    tracks: [],
-    isPlaying: false,
-    isLoading: false,
-    howlInstance: null,
-    error: null,
-    selectedTrack: null,
-    toggleIsPlaying: () => {
-      set(state => {
-        state.isPlaying = !state.isPlaying;
-      });
-    },
-    fetchTracks: async () => {
-      set(state => {
-        state.isLoading = true;
-        state.error = null;
-      });
-
-      try {
-        const response = await fetch(
-          'https://api.jamendo.com/v3.0/tracks/?client_id=399f3217&format=jsonpretty&datebetween=2012-01-01_2024-01-01&limit=20'
-        );
-
-        const data = await response.json();
-
+  immer(
+    devtools(set => ({
+      tracks: [],
+      isPlaying: false,
+      isLoading: false,
+      howlInstance: null,
+      error: null,
+      selectedTrack: null,
+      toggleIsPlaying: () => {
         set(state => {
-          state.isLoading = false;
-          state.tracks = data.results;
+          state.isPlaying = !state.isPlaying;
         });
-      } catch (error) {
-        assertError(error);
+      },
+      fetchTracks: async () => {
         set(state => {
-          state.error = error.message;
-          state.isLoading = false;
+          state.isLoading = true;
+          state.error = null;
         });
-      }
-    },
-    setSelectedTrack: (track: Track) => {
-      set(state => {
-        state.selectedTrack = {
-          id: track.id,
-          name: track.name,
-          artist_name: track.artist_name,
-          image: track.image,
-          duration: track.duration,
-          audiodownload: track.audiodownload,
-        };
-      });
-    },
-    setHowlInstance: (src: string) => {
-      set(state => {
-        state.howlInstance = new Howl({
-          src: [src],
-          html5: true,
+
+        try {
+          const response = await fetch(
+            'https://api.jamendo.com/v3.0/tracks/?client_id=399f3217&format=jsonpretty&datebetween=2012-01-01_2024-01-01&limit=20'
+          );
+
+          const data = await response.json();
+
+          set(state => {
+            state.isLoading = false;
+            state.tracks = data.results;
+          });
+        } catch (error) {
+          assertError(error);
+          set(state => {
+            state.error = error.message;
+            state.isLoading = false;
+          });
+        }
+      },
+      setSelectedTrack: (track: Track) => {
+        set(state => {
+          state.selectedTrack = {
+            id: track.id,
+            name: track.name,
+            artist_name: track.artist_name,
+            image: track.image,
+            duration: track.duration,
+            audiodownload: track.audiodownload,
+          };
         });
-      });
-    },
-    playTrack: () => {
-      set(state => {
-        state.isPlaying = true;
-        state.howlInstance?.play();
-      });
-    },
-    pauseTrack: () => {
-      set(state => {
-        state.isPlaying = false;
-        state.howlInstance?.pause();
-      });
-    },
-  }))
+      },
+      setHowlInstance: (src: string) => {
+        set(state => {
+          state.howlInstance = new Howl({
+            src: [src],
+            html5: true,
+          });
+        });
+      },
+      playTrack: () => {
+        set(state => {
+          state.isPlaying = true;
+          state.howlInstance?.play();
+        });
+      },
+      pauseTrack: () => {
+        set(state => {
+          state.isPlaying = false;
+          state.howlInstance?.pause();
+        });
+      },
+    }))
+  )
 );
