@@ -40,10 +40,12 @@ interface State {
   howlInstance: Howl | null;
   error: string | null;
   selectedTrack: SelectedTrack | null;
+  currentPlayTime: number;
   toggleIsPlaying: () => void;
   fetchTracks: () => Promise<void>;
   setSelectedTrack: (track: Track, index: number) => void;
   setHowlInstance: (src: string) => void;
+  setCurrentPlayTime: (value: number) => void;
   playTrack: () => void;
   pauseTrack: () => void;
 }
@@ -57,6 +59,7 @@ export const useStore = create<State>()(
       howlInstance: null,
       error: null,
       selectedTrack: null,
+      currentPlayTime: 0,
       toggleIsPlaying: () => {
         set(state => {
           state.isPlaying = !state.isPlaying;
@@ -106,6 +109,11 @@ export const useStore = create<State>()(
             src: [src],
             html5: true,
           });
+        });
+      },
+      setCurrentPlayTime: (value: number) => {
+        set(state => {
+          state.currentPlayTime = value;
         });
       },
       playTrack: () => {
