@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   Play,
   Pause,
@@ -16,8 +17,10 @@ import { SelectedTrack, useStore } from '@/store';
 import { getNextIndex, getPrevIndex } from '@/utils/array';
 
 function BottomControlBar({ track }: { track: SelectedTrack }) {
+  const [volume, setVolume] = useState(0.5);
   const tracks = useStore(state => state.tracks);
   const isPlaying = useStore(state => state.isPlaying);
+  const howlInstance = useStore(state => state.howlInstance);
   const playTrack = useStore(state => state.playTrack);
   const pauseTrack = useStore(state => state.pauseTrack);
   const setSelectedTrack = useStore(state => state.setSelectedTrack);
@@ -44,6 +47,10 @@ function BottomControlBar({ track }: { track: SelectedTrack }) {
       playTrack();
     }
   }
+
+  useEffect(() => {
+    howlInstance?.volume(volume);
+  }, [volume, howlInstance]);
 
   return (
     <footer className="h-20 border-t bg-stone-700 p-4">
@@ -110,7 +117,13 @@ function BottomControlBar({ track }: { track: SelectedTrack }) {
         </div>
         <div className="flex items-center space-x-2 justify-self-end">
           <Volume2 className="h-5 w-5 text-muted-foreground" />
-          <Slider defaultValue={[50]} max={100} step={1} className="w-24" />
+          <Slider
+            defaultValue={[volume]}
+            max={1}
+            step={0.1}
+            onValueChange={value => setVolume(value[0])}
+            className="w-24"
+          />
         </div>
       </div>
     </footer>
