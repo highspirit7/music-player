@@ -31,7 +31,7 @@ export interface Track {
 export type SelectedTrack = Pick<
   Track,
   'id' | 'artist_name' | 'image' | 'name' | 'duration' | 'audiodownload'
->;
+> & { index: number };
 
 interface State {
   tracks: Track[];
@@ -42,7 +42,7 @@ interface State {
   selectedTrack: SelectedTrack | null;
   toggleIsPlaying: () => void;
   fetchTracks: () => Promise<void>;
-  setSelectedTrack: (track: Track) => void;
+  setSelectedTrack: (track: Track, index: number) => void;
   setHowlInstance: (src: string) => void;
   playTrack: () => void;
   pauseTrack: () => void;
@@ -87,7 +87,7 @@ export const useStore = create<State>()(
           });
         }
       },
-      setSelectedTrack: (track: Track) => {
+      setSelectedTrack: (track: Track, index: number) => {
         set(state => {
           state.selectedTrack = {
             id: track.id,
@@ -96,6 +96,7 @@ export const useStore = create<State>()(
             image: track.image,
             duration: track.duration,
             audiodownload: track.audiodownload,
+            index,
           };
         });
       },

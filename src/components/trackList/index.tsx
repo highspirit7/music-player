@@ -1,4 +1,6 @@
 import { Pause, Play } from 'lucide-react';
+import { decode } from 'html-entities';
+
 import toMinutesAndSeconds from '@/utils/toMinuteAndSeconds';
 import { Track, useStore } from '@/store';
 
@@ -11,9 +13,9 @@ function TrackList() {
   const playTrack = useStore(state => state.playTrack);
   const pauseTrack = useStore(state => state.pauseTrack);
 
-  function handleTrackClick(track: Track) {
+  function handleTrackClick(track: Track, index: number) {
     if (isPlaying) pauseTrack();
-    setSelectedTrack(track);
+    setSelectedTrack(track, index);
     setHowlInstance(track.audiodownload);
     playTrack();
   }
@@ -25,7 +27,7 @@ function TrackList() {
 
   return (
     <div className="grid gap-4 p-4">
-      {tracks.map(track => (
+      {tracks.map((track, index) => (
         <div
           key={track.id}
           className="flex items-center space-x-4 p-2 hover:bg-accent rounded-md transition-opacity duration-200"
@@ -50,7 +52,7 @@ function TrackList() {
             ) : (
               <div
                 className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
-                onClick={() => handleTrackClick(track)}
+                onClick={() => handleTrackClick(track, index)}
               >
                 <Play className="w-4 h-4" />
               </div>
@@ -58,8 +60,10 @@ function TrackList() {
           </div>
 
           <div className="flex-1">
-            <h3 className="font-medium">{track.name}</h3>
-            <p className="text-sm text-muted-foreground">{track.artist_name}</p>
+            <h3 className="font-medium">{decode(track.name)}</h3>
+            <p className="text-sm text-muted-foreground">
+              {decode(track.artist_name)}
+            </p>
           </div>
           <span className="text-sm text-muted-foreground">
             {toMinutesAndSeconds(track.duration)}
