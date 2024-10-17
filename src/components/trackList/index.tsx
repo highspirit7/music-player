@@ -9,12 +9,15 @@ function TrackList() {
   const tracks = useStore(state => state.tracks);
   const selectedTrack = useStore(state => state.selectedTrack);
   const setSelectedTrack = useStore(state => state.setSelectedTrack);
+  const setCurrentPlayTime = useStore(state => state.setCurrentPlayTime);
   const setHowlInstance = useStore(state => state.setHowlInstance);
   const playTrack = useStore(state => state.playTrack);
   const pauseTrack = useStore(state => state.pauseTrack);
 
   function handleTrackClick(track: Track, index: number) {
     if (isPlaying) pauseTrack();
+
+    setCurrentPlayTime(0);
     setSelectedTrack(track, index);
     setHowlInstance(track.audiodownload);
     playTrack();

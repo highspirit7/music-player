@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Play,
   Pause,
@@ -18,16 +18,24 @@ import { getNextIndex, getPrevIndex } from '@/utils/array';
 
 function BottomControlBar({ track }: { track: SelectedTrack }) {
   const [volume, setVolume] = useState(0.5);
+  const intervalRef = useRef<NodeJS.Timeout>();
+
   const tracks = useStore(state => state.tracks);
   const isPlaying = useStore(state => state.isPlaying);
   const howlInstance = useStore(state => state.howlInstance);
+  const currentPlayTime = useStore(state => state.currentPlayTime);
+
   const playTrack = useStore(state => state.playTrack);
   const pauseTrack = useStore(state => state.pauseTrack);
+  const setCurrentPlayTime = useStore(state => state.setCurrentPlayTime);
   const setSelectedTrack = useStore(state => state.setSelectedTrack);
   const setHowlInstance = useStore(state => state.setHowlInstance);
 
   function handleSkipForwardClick() {
+    setCurrentPlayTime(0);
+
     if (isPlaying) pauseTrack();
+
     const nextTrackIndex = getNextIndex(tracks, track.index);
 
     if (nextTrackIndex >= 0) {
@@ -38,7 +46,10 @@ function BottomControlBar({ track }: { track: SelectedTrack }) {
   }
 
   function handleSkipBackClick() {
+    setCurrentPlayTime(0);
+
     if (isPlaying) pauseTrack();
+
     const prevTrackIndex = getPrevIndex(tracks, track.index);
 
     if (prevTrackIndex >= 0) {
@@ -48,9 +59,60 @@ function BottomControlBar({ track }: { track: SelectedTrack }) {
     }
   }
 
+  function onCurrentPlayTimeChange(value: number[]) {
+    if (isPlaying) howlInstance?.pause();
+
+    setCurrentPlayTime(value[0]);
+  }
+
+  function onCurrentPlayTimeCommit(value: number[]) {
+    howlInstance?.seek(value[0]);
+    if (isPlaying) howlInstance?.play();
+  }
+
+  useEffect(() => {
+    if (howlInstance) {
+      howlInstance.on('end', () => {
+        clearInterval(intervalRef.current);
+        const nextTrackIndex = getNextIndex(tracks, track.index);
+        setCurrentPlayTime(0);
+
+        if (nextTrackIndex >= 0) {
+          setSelectedTrack(tracks[nextTrackIndex], nextTrackIndex);
+          setHowlInstance(tracks[nextTrackIndex].audiodownload);
+          playTrack();
+        }
+      });
+      if (isPlaying) {
+        intervalRef.current = setInterval(() => {
+          setCurrentPlayTime(Math.round(howlInstance.seek()));
+          //   console.log('setInterval', Math.round(howlInstance.seek()));
+        }, 1000);
+      } else clearInterval(intervalRef.current);
+    }
+
+    return () => {
+      howlInstance?.off('end');
+      clearInterval(intervalRef.current);
+    };
+  }, [
+    isPlaying,
+    howlInstance,
+    tracks,
+    track.index,
+    setSelectedTrack,
+    setHowlInstance,
+    playTrack,
+    setCurrentPlayTime,
+  ]);
+
   useEffect(() => {
     howlInstance?.volume(volume);
   }, [volume, howlInstance]);
+
+  useEffect(() => {
+    console.log('currentPlayTime', toMinutesAndSeconds(currentPlayTime));
+  }, [currentPlayTime]);
 
   return (
     <footer className="h-20 border-t bg-stone-700 p-4">
@@ -107,9 +169,17 @@ function BottomControlBar({ track }: { track: SelectedTrack }) {
           </div>
           <div className="flex items-center space-x-2 w-full">
             <span className="text-sm text-muted-foreground min-w-[30px]">
-              1:23
+              {toMinutesAndSeconds(currentPlayTime)}
             </span>
-            <Slider defaultValue={[33]} max={100} step={1} className="w-full" />{' '}
+            <Slider
+              defaultValue={[currentPlayTime]}
+              value={[currentPlayTime]}
+              max={track.duration}
+              step={1}
+              onValueChange={onCurrentPlayTimeChange}
+              onValueCommit={onCurrentPlayTimeCommit}
+              className="w-full"
+            />{' '}
             <span className="text-sm text-muted-foreground min-w-[30px]">
               {toMinutesAndSeconds(track.duration)}
             </span>
