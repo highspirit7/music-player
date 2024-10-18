@@ -9,7 +9,19 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    @apply border-border;
   }
+
+  .scrollbar-default::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-default::-webkit-scrollbar-thumb {
+    @apply bg-neutral-800;
+    border-radius: 10px;
+  }
+
   :root {
     --radius: 0.5rem;
     --background: 33, 5%, 32%;
@@ -37,13 +49,17 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
-@layer base {
+/* @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
   }
-}
+} */
