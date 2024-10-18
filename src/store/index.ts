@@ -4,6 +4,8 @@ import { immer } from 'zustand/middleware/immer';
 import { devtools } from 'zustand/middleware';
 
 import { assertError } from '@/utils/errors';
+import { getTracks } from '@/api/tracks';
+import { genres } from '@/lib/const';
 
 export interface Track {
   id: string;
@@ -28,22 +30,29 @@ export interface Track {
   audiodownload_allowed: boolean;
 }
 
-export type SelectedTrack = Pick<
-  Track,
-  'id' | 'artist_name' | 'image' | 'name' | 'duration' | 'audiodownload'
-> & { index: number };
+// export type SelectedTrack = Pick<
+//   Track,
+//   'id' | 'artist_name' | 'image' | 'name' | 'duration' | 'audiodownload'
+// > & { index: number };
+type MainTracks = {
+  [K in (typeof genres)[number]]: Track[];
+};
 
 interface State {
-  tracks: Track[];
+  mainTracks: MainTracks;
+  playLists: Record<string, Track[]>;
   isPlaying: boolean;
-  isLoading: boolean;
   howlInstance: Howl | null;
   error: string | null;
-  selectedTrack: SelectedTrack | null;
+  selectedList: Track[];
+  currentTrackIndex: number;
   currentPlayTime: number;
   toggleIsPlaying: () => void;
-  fetchTracks: () => Promise<void>;
-  setSelectedTrack: (track: Track, index: number) => void;
+  fetchTracks: () => void;
+  // ? 다른 장르 리스트의 트랙을 선택할 때 그 선택하는 트랙 리스트 장르가 기존에 선택된 리스트의 장르와 다르다는 것을 감지할 수 있어야 한다.
+  // 그냥 클릭한 트랙의 아이디가 현재 선택된 트랙 리스트에 있냐 없냐를 체크해서 없는 경우에만 전체 tracks를 업데이트하는 방향으로 가자
+  setSelectedList: (tracks: Track[], index: number) => void;
+  setCurrentTrackIndex: (index: number) => void;
   setHowlInstance: (src: string) => void;
   setCurrentPlayTime: (value: number) => void;
   playTrack: () => void;
@@ -53,12 +62,13 @@ interface State {
 export const useStore = create<State>()(
   immer(
     devtools(set => ({
-      tracks: [],
+      mainTracks: { lofi: [], hiphop: [], pop: [], rock: [] },
+      playLists: {},
       isPlaying: false,
-      isLoading: false,
       howlInstance: null,
       error: null,
-      selectedTrack: null,
+      selectedList: [],
+      currentTrackIndex: 0,
       currentPlayTime: 0,
       toggleIsPlaying: () => {
         set(state => {
@@ -67,40 +77,39 @@ export const useStore = create<State>()(
       },
       fetchTracks: async () => {
         set(state => {
-          state.isLoading = true;
           state.error = null;
         });
 
         try {
-          const response = await fetch(
-            'https://api.jamendo.com/v3.0/tracks/?client_id=399f3217&format=jsonpretty&datebetween=2012-01-01_2024-01-01&limit=20'
-          );
+          const trackPromises = genres.map(async genre => {
+            const tracks = await getTracks(genre);
+            return { genre, tracks };
+          });
 
-          const data = await response.json();
+          const results = await Promise.all(trackPromises);
 
           set(state => {
-            state.isLoading = false;
-            state.tracks = data.results;
+            results.forEach(({ genre, tracks }) => {
+              state.mainTracks[genre] = tracks;
+            });
           });
         } catch (error) {
           assertError(error);
           set(state => {
             state.error = error.message;
-            state.isLoading = false;
           });
         }
       },
-      setSelectedTrack: (track: Track, index: number) => {
+
+      setSelectedList: (tracks: Track[], index: number) => {
         set(state => {
-          state.selectedTrack = {
-            id: track.id,
-            name: track.name,
-            artist_name: track.artist_name,
-            image: track.image,
-            duration: track.duration,
-            audiodownload: track.audiodownload,
-            index,
-          };
+          state.selectedList = tracks;
+          state.currentTrackIndex = index;
+        });
+      },
+      setCurrentTrackIndex: (index: number) => {
+        set(state => {
+          state.currentTrackIndex = index;
         });
       },
       setHowlInstance: (src: string) => {

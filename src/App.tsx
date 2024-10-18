@@ -6,11 +6,13 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import BottomControlBar from '@/components/bottomControlBar';
 import { useStore } from '@/store';
-import TrackList from '@/components/trackList';
+// import TrackList from '@/components/trackList';
+import MusicCardList from '@/components/music-card-list';
+import { genres } from './lib/const';
 
 export default function App() {
   const fetchTracks = useStore(state => state.fetchTracks);
-  const selectedTrack = useStore(state => state.selectedTrack);
+  const mainTracks = useStore(state => state.mainTracks);
 
   useEffect(() => {
     fetchTracks();
@@ -72,10 +74,16 @@ export default function App() {
           <div className="sticky top-0 p-4 border-b border-border z-50 bg-background">
             <h1 className="text-2xl font-bold">Your Music</h1>
           </div>
-          <TrackList />
+          {genres.map(genre => (
+            <MusicCardList
+              tracks={mainTracks[genre]}
+              genre={genre}
+              key={genre}
+            />
+          ))}
         </main>
       </div>
-      {selectedTrack && <BottomControlBar track={selectedTrack} />}
+      <BottomControlBar />
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { Track, useStore } from '@/store';
 
 function TrackList() {
   const isPlaying = useStore(state => state.isPlaying);
-  const tracks = useStore(state => state.tracks);
+  const tracks = useStore(state => state.mainTracks);
   const selectedTrack = useStore(state => state.selectedTrack);
   const setSelectedTrack = useStore(state => state.setSelectedTrack);
   const setCurrentPlayTime = useStore(state => state.setCurrentPlayTime);
