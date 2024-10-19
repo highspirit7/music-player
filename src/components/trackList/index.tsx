@@ -1,4 +1,4 @@
-import { Music2, Pause, Play } from 'lucide-react';
+import { Heart, Music2, Pause, Play } from 'lucide-react';
 import { decode } from 'html-entities';
 
 import toMinutesAndSeconds from '@/utils/toMinuteAndSeconds';
@@ -17,6 +17,7 @@ function TrackList({ tracks }: { tracks: Track[] }) {
   const setHowlInstance = useStore(state => state.setHowlInstance);
   const playTrack = useStore(state => state.playTrack);
   const pauseTrack = useStore(state => state.pauseTrack);
+  const toggleIsLiked = useStore(state => state.toggleIsLiked);
 
   function handleTrackClick(clickedTrack: Track, index: number) {
     if (isPlaying) pauseTrack();
@@ -85,9 +86,23 @@ function TrackList({ tracks }: { tracks: Track[] }) {
               {decode(track.artist_name)}
             </p>
           </div>
-          <span className="text-sm text-muted-foreground">
-            {toMinutesAndSeconds(track.duration)}
-          </span>
+          <div className="flex items-center">
+            <button
+              onClick={() => toggleIsLiked(currentPlayingTrack.id)}
+              className={`transition-colors ${currentPlayingTrack.isLiked ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-white'}`}
+            >
+              <Heart
+                className="h-5 w-5"
+                fill={currentPlayingTrack.isLiked ? 'currentColor' : 'none'}
+              />
+              <span className="sr-only">
+                {currentPlayingTrack.isLiked ? 'Unlike' : 'Like'}
+              </span>
+            </button>
+            <span className="ml-3 text-sm text-muted-foreground">
+              {toMinutesAndSeconds(track.duration)}
+            </span>
+          </div>
         </div>
       ))}
     </div>
