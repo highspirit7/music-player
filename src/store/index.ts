@@ -28,47 +28,61 @@ export interface Track {
   waveform: string;
   image: string;
   audiodownload_allowed: boolean;
+  isLiked: boolean;
 }
 
-// export type SelectedTrack = Pick<
-//   Track,
-//   'id' | 'artist_name' | 'image' | 'name' | 'duration' | 'audiodownload'
-// > & { index: number };
+export type PlayingTrack = Pick<
+  Track,
+  | 'id'
+  | 'artist_name'
+  | 'name'
+  | 'audiodownload'
+  | 'image'
+  | 'duration'
+  | 'isLiked'
+> & { index: number };
+
 type MainTracks = {
   [K in (typeof genres)[number]]: Track[];
 };
 
 interface State {
   mainTracks: MainTracks;
-  playLists: Record<string, Track[]>;
   isPlaying: boolean;
   howlInstance: Howl | null;
   error: string | null;
-  selectedList: Track[];
-  currentTrackIndex: number;
+  currentPlayingTrack: PlayingTrack;
+  currentPlayingList: Track[];
   currentPlayTime: number;
   toggleIsPlaying: () => void;
   fetchTracks: () => void;
-  // ? 다른 장르 리스트의 트랙을 선택할 때 그 선택하는 트랙 리스트 장르가 기존에 선택된 리스트의 장르와 다르다는 것을 감지할 수 있어야 한다.
-  // 그냥 클릭한 트랙의 아이디가 현재 선택된 트랙 리스트에 있냐 없냐를 체크해서 없는 경우에만 전체 tracks를 업데이트하는 방향으로 가자
-  setSelectedList: (tracks: Track[], index: number) => void;
-  setCurrentTrackIndex: (index: number) => void;
+  setCurrentPlayingList: (tracks: Track[]) => void;
+  setCurrentPlayingTrack: (track: PlayingTrack) => void;
   setHowlInstance: (src: string) => void;
   setCurrentPlayTime: (value: number) => void;
   playTrack: () => void;
   pauseTrack: () => void;
+  toggleIsLiked: (trackId: string) => void;
 }
 
 export const useStore = create<State>()(
   immer(
     devtools(set => ({
-      mainTracks: { lofi: [], hiphop: [], pop: [], rock: [] },
-      playLists: {},
+      mainTracks: { lofi: [], hiphop: [], pop: [], rock: [] } as MainTracks,
       isPlaying: false,
       howlInstance: null,
       error: null,
-      selectedList: [],
-      currentTrackIndex: 0,
+      currentPlayingList: [],
+      currentPlayingTrack: {
+        id: '',
+        name: '',
+        artist_name: '',
+        audiodownload: '',
+        image: '',
+        duration: 0,
+        isLiked: false,
+        index: -1,
+      } as PlayingTrack,
       currentPlayTime: 0,
       toggleIsPlaying: () => {
         set(state => {
@@ -90,7 +104,9 @@ export const useStore = create<State>()(
 
           set(state => {
             results.forEach(({ genre, tracks }) => {
-              state.mainTracks[genre] = tracks;
+              state.mainTracks[genre] = tracks.map(track =>
+                Object.assign(track, { isLiked: false })
+              );
             });
           });
         } catch (error) {
@@ -100,16 +116,14 @@ export const useStore = create<State>()(
           });
         }
       },
-
-      setSelectedList: (tracks: Track[], index: number) => {
+      setCurrentPlayingList: (tracks: Track[]) => {
         set(state => {
-          state.selectedList = tracks;
-          state.currentTrackIndex = index;
+          state.currentPlayingList = tracks;
         });
       },
-      setCurrentTrackIndex: (index: number) => {
+      setCurrentPlayingTrack: (track: PlayingTrack) => {
         set(state => {
-          state.currentTrackIndex = index;
+          state.currentPlayingTrack = track;
         });
       },
       setHowlInstance: (src: string) => {
@@ -135,6 +149,32 @@ export const useStore = create<State>()(
         set(state => {
           state.isPlaying = false;
           state.howlInstance?.pause();
+        });
+      },
+      toggleIsLiked: (trackId: string) => {
+        set(state => {
+          (genres as ReadonlyArray<(typeof genres)[number]>).forEach(genre => {
+            const trackIndex = state.mainTracks[genre].findIndex(
+              track => track.id === trackId
+            );
+
+            if (trackIndex !== -1) {
+              state.mainTracks[genre][trackIndex].isLiked =
+                !state.mainTracks[genre][trackIndex].isLiked;
+            }
+          });
+
+          const clickedTrackIndex = state.currentPlayingList.findIndex(
+            track => track.id === trackId
+          );
+          if (clickedTrackIndex !== -1) {
+            state.currentPlayingList[clickedTrackIndex].isLiked =
+              !state.currentPlayingList[clickedTrackIndex].isLiked;
+          }
+          if (state.currentPlayingTrack.index > -1) {
+            state.currentPlayingTrack.isLiked =
+              !state.currentPlayingTrack.isLiked;
+          }
         });
       },
     }))
