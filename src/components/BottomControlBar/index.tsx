@@ -2,11 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Play,
   Pause,
-  Repeat,
-  Shuffle,
   SkipBack,
   SkipForward,
   Volume2,
+  Heart,
 } from 'lucide-react';
 import { decode } from 'html-entities';
 
@@ -35,6 +34,7 @@ function BottomControlBar() {
   const setCurrentPlayTime = useStore(state => state.setCurrentPlayTime);
   const setHowlInstance = useStore(state => state.setHowlInstance);
   const setCurrentTrackIndex = useStore(state => state.setCurrentTrackIndex);
+  const toggleIsLiked = useStore(state => state.toggleIsLiked);
 
   function handleSkipForwardClick() {
     setCurrentPlayTime(0);
@@ -115,10 +115,6 @@ function BottomControlBar() {
     howlInstance?.volume(volume);
   }, [volume, howlInstance]);
 
-  //   useEffect(() => {
-  //     console.log('currentPlayTime', toMinutesAndSeconds(currentPlayTime));
-  //   }, [currentPlayTime]);
-
   if (selectedList.length > 0)
     return (
       <footer className="h-20 border-t bg-stone-700 p-4">
@@ -138,10 +134,6 @@ function BottomControlBar() {
           </div>
           <div className="flex flex-col items-center space-y-2 max-w-md">
             <div className="flex items-center space-x-4">
-              <Button size="icon" variant="ghost">
-                <Shuffle className="h-4 w-4" />
-                <span className="sr-only">Shuffle</span>
-              </Button>
               <Button size="icon" variant="ghost" onClick={handleSkipBackClick}>
                 <SkipBack className="h-4 w-4" />
                 <span className="sr-only">Previous</span>
@@ -168,10 +160,6 @@ function BottomControlBar() {
                 <SkipForward className="h-4 w-4" />
                 <span className="sr-only">Next</span>
               </Button>
-              <Button size="icon" variant="ghost">
-                <Repeat className="h-4 w-4" />
-                <span className="sr-only">Repeat</span>
-              </Button>
             </div>
             <div className="flex items-center space-x-2 w-full">
               <span className="text-sm text-muted-foreground min-w-[30px]">
@@ -189,6 +177,18 @@ function BottomControlBar() {
               <span className="text-sm text-muted-foreground min-w-[30px]">
                 {toMinutesAndSeconds(currentTrack.duration)}
               </span>
+              <button
+                onClick={() => toggleIsLiked(currentTrack.id)}
+                className={`transition-colors ${currentTrack.isLiked ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-white'}`}
+              >
+                <Heart
+                  className="h-5 w-5"
+                  fill={currentTrack.isLiked ? 'currentColor' : 'none'}
+                />
+                <span className="sr-only">
+                  {currentTrack.isLiked ? 'Unlike' : 'Like'}
+                </span>
+              </button>
             </div>
           </div>
           <div className="flex items-center space-x-2 justify-self-end">
