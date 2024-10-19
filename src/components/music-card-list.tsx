@@ -101,7 +101,9 @@ export default function MusicCardList({
                     alt={`${track.name} by ${track.artist_name}`}
                     className="w-full h-full object-cover rounded-md"
                   />
-                  {currentIndexInList === index ? (
+                  {selectedList.some(
+                    trackInSelectedList => trackInSelectedList.id === track.id
+                  ) && currentIndexInList === index ? (
                     <div
                       className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded"
                       onClick={handlePlayOrPauseClick}
