@@ -31,6 +31,17 @@ export interface Track {
   isLiked: boolean;
 }
 
+export type PlayingTrack = Pick<
+  Track,
+  | 'id'
+  | 'artist_name'
+  | 'name'
+  | 'audiodownload'
+  | 'image'
+  | 'duration'
+  | 'isLiked'
+> & { index: number };
+
 type MainTracks = {
   [K in (typeof genres)[number]]: Track[];
 };
@@ -40,13 +51,13 @@ interface State {
   isPlaying: boolean;
   howlInstance: Howl | null;
   error: string | null;
-  selectedList: Track[];
-  currentTrackIndex: number;
+  currentPlayingTrack: PlayingTrack;
+  currentPlayingList: Track[];
   currentPlayTime: number;
   toggleIsPlaying: () => void;
   fetchTracks: () => void;
-  setSelectedList: (tracks: Track[], index: number) => void;
-  setCurrentTrackIndex: (index: number) => void;
+  setCurrentPlayingList: (tracks: Track[]) => void;
+  setCurrentPlayingTrack: (track: PlayingTrack) => void;
   setHowlInstance: (src: string) => void;
   setCurrentPlayTime: (value: number) => void;
   playTrack: () => void;
@@ -54,18 +65,24 @@ interface State {
   toggleIsLiked: (trackId: string) => void;
 }
 
-// TODO: like, unlike 하는 액션 필요
-
 export const useStore = create<State>()(
   immer(
     devtools(set => ({
       mainTracks: { lofi: [], hiphop: [], pop: [], rock: [] } as MainTracks,
-      playLists: {},
       isPlaying: false,
       howlInstance: null,
       error: null,
-      selectedList: [],
-      currentTrackIndex: 0,
+      currentPlayingList: [],
+      currentPlayingTrack: {
+        id: '',
+        name: '',
+        artist_name: '',
+        audiodownload: '',
+        image: '',
+        duration: 0,
+        isLiked: false,
+        index: -1,
+      } as PlayingTrack,
       currentPlayTime: 0,
       toggleIsPlaying: () => {
         set(state => {
@@ -99,16 +116,14 @@ export const useStore = create<State>()(
           });
         }
       },
-
-      setSelectedList: (tracks: Track[], index: number) => {
+      setCurrentPlayingList: (tracks: Track[]) => {
         set(state => {
-          state.selectedList = tracks;
-          state.currentTrackIndex = index;
+          state.currentPlayingList = tracks;
         });
       },
-      setCurrentTrackIndex: (index: number) => {
+      setCurrentPlayingTrack: (track: PlayingTrack) => {
         set(state => {
-          state.currentTrackIndex = index;
+          state.currentPlayingTrack = track;
         });
       },
       setHowlInstance: (src: string) => {
@@ -149,12 +164,16 @@ export const useStore = create<State>()(
             }
           });
 
-          const selectedTrackIndex = state.selectedList.findIndex(
+          const clickedTrackIndex = state.currentPlayingList.findIndex(
             track => track.id === trackId
           );
-          if (selectedTrackIndex !== -1) {
-            state.selectedList[selectedTrackIndex].isLiked =
-              !state.selectedList[selectedTrackIndex].isLiked;
+          if (clickedTrackIndex !== -1) {
+            state.currentPlayingList[clickedTrackIndex].isLiked =
+              !state.currentPlayingList[clickedTrackIndex].isLiked;
+          }
+          if (state.currentPlayingTrack.index > -1) {
+            state.currentPlayingTrack.isLiked =
+              !state.currentPlayingTrack.isLiked;
           }
         });
       },

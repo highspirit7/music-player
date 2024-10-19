@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Link, Outlet } from 'react-router-dom';
 import { Heart, Library, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -6,13 +7,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import BottomControlBar from '@/components/bottomControlBar';
 import { useStore } from '@/store';
-// import TrackList from '@/components/trackList';
-import MusicCardList from '@/components/music-card-list';
-import { genres } from './lib/const';
 
 export default function App() {
   const fetchTracks = useStore(state => state.fetchTracks);
-  const mainTracks = useStore(state => state.mainTracks);
 
   useEffect(() => {
     fetchTracks();
@@ -23,15 +20,18 @@ export default function App() {
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar */}
         <aside className="w-56 p-6 hidden md:block border-r border-border">
-          <h1 className="text-2xl font-bold mb-6 text-primary">TC-Music</h1>
+          <h1 className="text-2xl font-bold mb-6 text-primary">
+            <Link to="/">TC-Music</Link>
+          </h1>
+
           <nav className="space-y-4">
-            <a
-              href="#"
+            <Link
+              to="/favorites"
               className="flex items-center space-x-2 text-primary hover:text-primary/80"
             >
               <Heart className="h-5 w-5" />
               <span>Favorites</span>
-            </a>
+            </Link>
             <a
               href="#"
               className="flex items-center space-x-2 text-primary hover:text-primary/80"
@@ -70,7 +70,8 @@ export default function App() {
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-auto bg-background">
+        <Outlet />
+        {/* <main className="flex-1 overflow-auto bg-background">
           <div className="sticky top-0 p-4 border-b border-border z-50 bg-background">
             <h1 className="text-2xl font-bold">Your Music</h1>
           </div>
@@ -81,7 +82,7 @@ export default function App() {
               key={genre}
             />
           ))}
-        </main>
+        </main> */}
       </div>
       <BottomControlBar />
     </div>

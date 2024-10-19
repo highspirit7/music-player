@@ -12,5 +12,5 @@ export const getTracks = async (
   );
 
   const data = await response.json();
-  return data.results;
+  return data.results.filter((track: Track) => track.audiodownload !== '');
 };

@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Track, useStore } from '@/store';
 import { genres } from '@/lib/const';
+import createPlayingTrack from '@/utils/createPlayingTrack';
 
 export default function MusicCardList({
   tracks,
@@ -19,12 +20,15 @@ export default function MusicCardList({
   const [canScrollRight, setCanScrollRight] = useState(true);
 
   const isPlaying = useStore(state => state.isPlaying);
-  const selectedList = useStore(state => state.selectedList);
-  const currentIndexInList = useStore(state => state.currentTrackIndex);
+  const currentPlayingList = useStore(state => state.currentPlayingList);
+  const currentPlayingTrack = useStore(state => state.currentPlayingTrack);
+
   const playTrack = useStore(state => state.playTrack);
   const pauseTrack = useStore(state => state.pauseTrack);
-  const setSelectedList = useStore(state => state.setSelectedList);
-  const setIndexInSelectedList = useStore(state => state.setCurrentTrackIndex);
+  const setCurrentPlayingList = useStore(state => state.setCurrentPlayingList);
+  const setCurrentPlayingTrack = useStore(
+    state => state.setCurrentPlayingTrack
+  );
   const setCurrentPlayTime = useStore(state => state.setCurrentPlayTime);
   const setHowlInstance = useStore(state => state.setHowlInstance);
 
@@ -37,16 +41,16 @@ export default function MusicCardList({
     }
   };
 
-  const handleTrackClick = (clickedTrack: Track, indexInList: number) => {
+  const handleTrackClick = (clickedTrack: Track, index: number) => {
     if (isPlaying) pauseTrack();
 
     setCurrentPlayTime(0);
-    setIndexInSelectedList(indexInList);
+    setCurrentPlayingTrack(createPlayingTrack(clickedTrack, index));
 
-    const isClickedTrackInSelectedList = selectedList.some(
+    const isClickedTrackInSelectedList = currentPlayingList.some(
       track => track.id === clickedTrack.id
     );
-    if (!isClickedTrackInSelectedList) setSelectedList(tracks, indexInList);
+    if (!isClickedTrackInSelectedList) setCurrentPlayingList(tracks);
 
     setHowlInstance(clickedTrack.audiodownload);
     playTrack();
@@ -101,9 +105,7 @@ export default function MusicCardList({
                     alt={`${track.name} by ${track.artist_name}`}
                     className="w-full h-full object-cover rounded-md"
                   />
-                  {selectedList.some(
-                    trackInSelectedList => trackInSelectedList.id === track.id
-                  ) && currentIndexInList === index ? (
+                  {currentPlayingTrack.id === track.id ? (
                     <div
                       className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded"
                       onClick={handlePlayOrPauseClick}
