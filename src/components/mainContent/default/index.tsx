@@ -1,8 +1,8 @@
 import { genres } from '@/lib/const';
-import MusicCardList from './music-card-list';
+import MusicCardList from './track-card-list';
 import { useStore } from '@/store';
 
-function MainTracks() {
+function Default() {
   const mainTracks = useStore(state => state.mainTracks);
   return (
     <main className="flex-1 overflow-auto bg-background">
@@ -16,4 +16,4 @@ function MainTracks() {
   );
 }
 
-export default MainTracks;
+export default Default;

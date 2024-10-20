@@ -6,7 +6,7 @@ export const getTracks = async (
   genre: string,
   datebetween: string = '2012-01-01_2024-10-01',
   limit: number = 10
-): Promise<Omit<Track, 'isLiked'>[]> => {
+): Promise<Omit<Track, 'isLiked' | 'playlists'>[]> => {
   const response = await fetch(
     `${BASE_URL}/tracks/?client_id=${import.meta.env.VITE_JAMENDO_CLIENT_ID}&format=jsonpretty&datebetween=${datebetween}&limit=${limit}&tags=${[genre]}`
   );

@@ -1,4 +1,4 @@
-import { Heart, Music2, Pause, Play } from 'lucide-react';
+import { Heart, Pause, Play } from 'lucide-react';
 import { decode } from 'html-entities';
 
 import toMinutesAndSeconds from '@/utils/toMinuteAndSeconds';
@@ -34,17 +34,17 @@ function TrackList({ tracks }: { tracks: Track[] }) {
     else playTrack();
   }
 
-  if (tracks.length === 0) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-        <Music2 className="w-12 h-12 text-muted-foreground mb-4" />
-        <h3 className="text-lg font-medium mb-2">No tracks added yet</h3>
-        <p className="text-sm text-muted-foreground">
-          The tracks you click the 'like' button on will be added here.'
-        </p>
-      </div>
-    );
-  }
+  //   if (tracks.length === 0) {
+  //     return (
+  //       <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+  //         <Music2 className="w-12 h-12 text-muted-foreground mb-4" />
+  //         <h3 className="text-lg font-medium mb-2">No tracks added yet</h3>
+  //         <p className="text-sm text-muted-foreground">
+  //           The tracks you click the 'like' button on will be added here.'
+  //         </p>
+  //       </div>
+  //     );
+  //   }
 
   return (
     <div className="grid gap-4 p-4">
