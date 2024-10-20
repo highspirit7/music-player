@@ -1,14 +1,14 @@
-import { Pause, Play } from 'lucide-react';
+import { Pause, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Track, useStore } from '@/store';
 import { genres } from '@/lib/const';
 import createPlayingTrack from '@/utils/createPlayingTrack';
+import SaveToPlaylistDialog from '@/components/save-to-playlist-dialog';
 
-export default function MusicCardList({
+export default function TrackCardList({
   tracks,
   genre,
 }: {
@@ -19,6 +19,7 @@ export default function MusicCardList({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
+  const playlists = useStore(state => state.playlists);
   const isPlaying = useStore(state => state.isPlaying);
   const currentPlayingList = useStore(state => state.currentPlayingList);
   const currentPlayingTrack = useStore(state => state.currentPlayingTrack);
@@ -54,11 +55,6 @@ export default function MusicCardList({
 
     setHowlInstance(clickedTrack.audiodownload);
     playTrack();
-  };
-
-  const handlePlayOrPauseClick = () => {
-    if (isPlaying) pauseTrack();
-    else playTrack();
   };
 
   const handleScroll = () => {
@@ -99,29 +95,46 @@ export default function MusicCardList({
           {tracks.map((track, index) => (
             <Card key={track.id} className="flex-shrink-0 w-48">
               <CardContent className="p-4">
-                <div className="aspect-square relative mb-3 cursor-pointer group">
+                <div className="aspect-square relative mb-3  group">
                   <img
                     src={track.image}
                     alt={`${track.name} by ${track.artist_name}`}
                     className="w-full h-full object-cover rounded-md"
                   />
                   {currentPlayingTrack.id === track.id ? (
-                    <div
-                      className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded"
-                      onClick={handlePlayOrPauseClick}
-                    >
+                    <div className="absolute inset-0 bg-black bg-opacity-50 grid grid-cols-3 grid-rows-3 rounded">
+                      {playlists.length > 0 && (
+                        <SaveToPlaylistDialog
+                          isOnCard={true}
+                          track={track}
+                          playlists={playlists}
+                        />
+                      )}
                       {isPlaying ? (
-                        <Pause className="w-8 h-8" />
+                        <Pause
+                          className="w-8 h-8 row-start-2 col-start-2 justify-self-center self-center cursor-pointer"
+                          onClick={() => pauseTrack()}
+                        />
                       ) : (
-                        <Play className="w-8 h-8" />
+                        <Play
+                          className="w-8 h-8 row-start-2 col-start-2 justify-self-center self-center cursor-pointer"
+                          onClick={() => playTrack()}
+                        />
                       )}
                     </div>
                   ) : (
-                    <div
-                      className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
-                      onClick={() => handleTrackClick(track, index)}
-                    >
-                      <Play className="w-8 h-8" />
+                    <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 grid grid-cols-3 grid-rows-3">
+                      {playlists.length > 0 && (
+                        <SaveToPlaylistDialog
+                          isOnCard={true}
+                          track={track}
+                          playlists={playlists}
+                        />
+                      )}
+                      <Play
+                        className="w-8 h-8 row-start-2 col-start-2 justify-self-center self-center cursor-pointer"
+                        onClick={() => handleTrackClick(track, index)}
+                      />
                     </div>
                   )}
                 </div>

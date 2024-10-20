@@ -32,14 +32,14 @@ function Playlist() {
       <div className="sticky top-0 p-4 border-b border-border z-50 bg-background">
         <h1 className="text-2xl font-bold">{playlist.title}</h1>
         {playlist.description && (
-          <p className="text-md text-muted-foreground">
+          <p className="text-md text-accent-foreground">
             {playlist.description}
           </p>
         )}
       </div>
       {tracksInPlaylist.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-          <Music2 className="w-12 h-12 text-muted-foreground mb-4" />
+          <Music2 className="w-12 h-12 text-secondary-foreground mb-4" />
           <h3 className="text-lg font-medium mb-2">No tracks added yet</h3>
           <p className="text-sm text-muted-foreground">
             Please add some tracks to this playlist!'

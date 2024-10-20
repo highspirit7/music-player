@@ -1,5 +1,5 @@
 import { genres } from '@/lib/const';
-import MusicCardList from './track-card-list';
+import TrackCardList from './track-card-list';
 import { useStore } from '@/store';
 
 function Default() {
@@ -10,7 +10,7 @@ function Default() {
         <h1 className="text-2xl font-bold">Your Music</h1>
       </div>
       {genres.map(genre => (
-        <MusicCardList tracks={mainTracks[genre]} genre={genre} key={genre} />
+        <TrackCardList tracks={mainTracks[genre]} genre={genre} key={genre} />
       ))}
     </main>
   );

@@ -84,10 +84,6 @@ function BottomControlBar() {
     if (isPlaying) howlInstance?.play();
   }
 
-  // TODO : currentPlayingList가 변할 때 대응 로직 추가
-  // 위 로직을 추가하려면 현재 재생 중인 트랙 상태도 따로 관리해야하나 싶다.
-  // 왜냐하면 currentPlayingList가 업데이트되었을 때 현재 재생 중인 트랙이 그 안에 있냐 없냐를 현재 구조로 체크할 수 가 없다..
-
   useEffect(() => {
     if (howlInstance) {
       howlInstance.on('end', () => {

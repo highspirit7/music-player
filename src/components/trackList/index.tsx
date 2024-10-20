@@ -34,18 +34,6 @@ function TrackList({ tracks }: { tracks: Track[] }) {
     else playTrack();
   }
 
-  //   if (tracks.length === 0) {
-  //     return (
-  //       <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-  //         <Music2 className="w-12 h-12 text-muted-foreground mb-4" />
-  //         <h3 className="text-lg font-medium mb-2">No tracks added yet</h3>
-  //         <p className="text-sm text-muted-foreground">
-  //           The tracks you click the 'like' button on will be added here.'
-  //         </p>
-  //       </div>
-  //     );
-  //   }
-
   return (
     <div className="grid gap-4 p-4">
       {tracks.map((track, index) => (
@@ -88,17 +76,18 @@ function TrackList({ tracks }: { tracks: Track[] }) {
           </div>
           <div className="flex items-center">
             <button
-              onClick={() => toggleIsLiked(currentPlayingTrack.id)}
-              className={`transition-colors ${currentPlayingTrack.isLiked ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-white'}`}
+              onClick={() => toggleIsLiked(track.id)}
+              className={`transition-colors ${track.isLiked ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-white'}`}
             >
               <Heart
                 className="h-5 w-5"
-                fill={currentPlayingTrack.isLiked ? 'currentColor' : 'none'}
+                fill={track.isLiked ? 'currentColor' : 'none'}
               />
               <span className="sr-only">
-                {currentPlayingTrack.isLiked ? 'Unlike' : 'Like'}
+                {track.isLiked ? 'Unlike' : 'Like'}
               </span>
             </button>
+            {/* 플레이리스트에서 제거할 수 있게 하는 버튼을 넣어야하고 favorites가 아닌 플레이리스트에서만 보이게 해야한다 */}
             <span className="ml-3 text-sm text-muted-foreground">
               {toMinutesAndSeconds(track.duration)}
             </span>

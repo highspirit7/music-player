@@ -93,7 +93,12 @@ function Playlists() {
       <ScrollArea className="h-[300px]">
         <div className="space-y-2">
           {playlists.map(playlist => (
-            <Link to={`/playlist/${playlist.id}`}>{playlist.title}</Link>
+            <Link
+              to={`/playlist/${playlist.id}`}
+              className="block hover:bg-muted rounded-md p-2"
+            >
+              {playlist.title}
+            </Link>
           ))}
         </div>
       </ScrollArea>
