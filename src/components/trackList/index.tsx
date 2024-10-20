@@ -1,11 +1,22 @@
-import { Heart, Pause, Play } from 'lucide-react';
+import { Heart, Pause, Play, Trash2 } from 'lucide-react';
 import { decode } from 'html-entities';
 
 import toMinutesAndSeconds from '@/utils/toMinuteAndSeconds';
 import { Track, useStore } from '@/store';
 import createPlayingTrack from '@/utils/createPlayingTrack';
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from '@/components/ui/tooltip';
 
-function TrackList({ tracks }: { tracks: Track[] }) {
+interface TrackListProps {
+  tracks: Track[];
+  playlistId?: number;
+}
+
+function TrackList({ tracks, playlistId }: TrackListProps) {
   const isPlaying = useStore(state => state.isPlaying);
   const currentPlayingTrack = useStore(state => state.currentPlayingTrack);
 
@@ -18,6 +29,9 @@ function TrackList({ tracks }: { tracks: Track[] }) {
   const playTrack = useStore(state => state.playTrack);
   const pauseTrack = useStore(state => state.pauseTrack);
   const toggleIsLiked = useStore(state => state.toggleIsLiked);
+  const removeTrackFromPlaylist = useStore(
+    state => state.removeTrackFromPlaylist
+  );
 
   function handleTrackClick(clickedTrack: Track, index: number) {
     if (isPlaying) pauseTrack();
@@ -87,7 +101,26 @@ function TrackList({ tracks }: { tracks: Track[] }) {
                 {track.isLiked ? 'Unlike' : 'Like'}
               </span>
             </button>
-            {/* 플레이리스트에서 제거할 수 있게 하는 버튼을 넣어야하고 favorites가 아닌 플레이리스트에서만 보이게 해야한다 */}
+            {playlistId && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      className="ml-2 text-muted-foreground hover:text-white transition-colors"
+                      onClick={() =>
+                        removeTrackFromPlaylist(track.id, playlistId)
+                      }
+                    >
+                      <Trash2 className="w-5 h-5" />
+                      <span className="sr-only">Remove from playlist</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Remove from this playlist</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
             <span className="ml-3 text-sm text-muted-foreground">
               {toMinutesAndSeconds(track.duration)}
             </span>

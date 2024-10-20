@@ -37,7 +37,7 @@ function Playlist() {
           </p>
         )}
       </div>
-      {tracksInPlaylist.length === 0 ? (
+      {tracksInPlaylist.length === 0 && Number(playlistId) > 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
           <Music2 className="w-12 h-12 text-secondary-foreground mb-4" />
           <h3 className="text-lg font-medium mb-2">No tracks added yet</h3>
@@ -46,7 +46,7 @@ function Playlist() {
           </p>
         </div>
       ) : (
-        <TrackList tracks={tracksInPlaylist} />
+        <TrackList tracks={tracksInPlaylist} playlistId={Number(playlistId)} />
       )}
     </main>
   );

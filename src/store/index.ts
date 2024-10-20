@@ -72,6 +72,7 @@ interface State {
   createPlaylist: (playlist: Playlist) => void;
   deletePlaylist: (id: number) => void;
   addTrackToPlaylist: (trackId: string, playlistId: number) => void;
+  removeTrackFromPlaylist: (trackId: string, playlistId: number) => void;
 }
 
 export const useStore = create<State>()(
@@ -112,7 +113,7 @@ export const useStore = create<State>()(
               state.mainTracks[genre] = tracks.map(track =>
                 Object.assign(track, {
                   isLiked: false,
-                  playlists: [],
+                  playlists: [] as number[],
                 })
               );
             });
@@ -207,6 +208,28 @@ export const useStore = create<State>()(
 
             if (trackIndex !== -1) {
               state.mainTracks[genre][trackIndex].playlists.push(playlistId);
+            }
+          });
+        });
+      },
+      removeTrackFromPlaylist: (trackId: string, playlistId: number) => {
+        set(state => {
+          (genres as ReadonlyArray<(typeof genres)[number]>).forEach(genre => {
+            const trackIndex = state.mainTracks[genre].findIndex(
+              track => track.id === trackId
+            );
+
+            if (trackIndex !== -1) {
+              const plalylistIdIndex = state.mainTracks[genre][
+                trackIndex
+              ].playlists.findIndex(id => id === playlistId);
+
+              if (plalylistIdIndex !== -1) {
+                state.mainTracks[genre][trackIndex].playlists.splice(
+                  plalylistIdIndex,
+                  1
+                );
+              }
             }
           });
         });
