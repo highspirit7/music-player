@@ -1,11 +1,22 @@
-import { Heart, Music2, Pause, Play } from 'lucide-react';
+import { Heart, Pause, Play, Trash2 } from 'lucide-react';
 import { decode } from 'html-entities';
 
 import toMinutesAndSeconds from '@/utils/toMinuteAndSeconds';
 import { Track, useStore } from '@/store';
 import createPlayingTrack from '@/utils/createPlayingTrack';
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from '@/components/ui/tooltip';
 
-function TrackList({ tracks }: { tracks: Track[] }) {
+interface TrackListProps {
+  tracks: Track[];
+  playlistId?: number;
+}
+
+function TrackList({ tracks, playlistId }: TrackListProps) {
   const isPlaying = useStore(state => state.isPlaying);
   const currentPlayingTrack = useStore(state => state.currentPlayingTrack);
 
@@ -18,6 +29,9 @@ function TrackList({ tracks }: { tracks: Track[] }) {
   const playTrack = useStore(state => state.playTrack);
   const pauseTrack = useStore(state => state.pauseTrack);
   const toggleIsLiked = useStore(state => state.toggleIsLiked);
+  const removeTrackFromPlaylist = useStore(
+    state => state.removeTrackFromPlaylist
+  );
 
   function handleTrackClick(clickedTrack: Track, index: number) {
     if (isPlaying) pauseTrack();
@@ -32,18 +46,6 @@ function TrackList({ tracks }: { tracks: Track[] }) {
   function handlePlayOrPauseClick() {
     if (isPlaying) pauseTrack();
     else playTrack();
-  }
-
-  if (tracks.length === 0) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-        <Music2 className="w-12 h-12 text-muted-foreground mb-4" />
-        <h3 className="text-lg font-medium mb-2">No tracks added yet</h3>
-        <p className="text-sm text-muted-foreground">
-          The tracks you click the 'like' button on will be added here.'
-        </p>
-      </div>
-    );
   }
 
   return (
@@ -88,17 +90,37 @@ function TrackList({ tracks }: { tracks: Track[] }) {
           </div>
           <div className="flex items-center">
             <button
-              onClick={() => toggleIsLiked(currentPlayingTrack.id)}
-              className={`transition-colors ${currentPlayingTrack.isLiked ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-white'}`}
+              onClick={() => toggleIsLiked(track.id)}
+              className={`transition-colors ${track.isLiked ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-white'}`}
             >
               <Heart
                 className="h-5 w-5"
-                fill={currentPlayingTrack.isLiked ? 'currentColor' : 'none'}
+                fill={track.isLiked ? 'currentColor' : 'none'}
               />
               <span className="sr-only">
-                {currentPlayingTrack.isLiked ? 'Unlike' : 'Like'}
+                {track.isLiked ? 'Unlike' : 'Like'}
               </span>
             </button>
+            {playlistId && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      className="ml-2 text-muted-foreground hover:text-white transition-colors"
+                      onClick={() =>
+                        removeTrackFromPlaylist(track.id, playlistId)
+                      }
+                    >
+                      <Trash2 className="w-5 h-5" />
+                      <span className="sr-only">Remove from playlist</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Remove from this playlist</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
             <span className="ml-3 text-sm text-muted-foreground">
               {toMinutesAndSeconds(track.duration)}
             </span>

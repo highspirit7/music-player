@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
+import { Music2 } from 'lucide-react';
+
 import { useStore } from '@/store';
-import TrackList from './trackList';
+import TrackList from '../trackList';
 
 function Favorites() {
   const mainTracks = useStore(state => state.mainTracks);
@@ -16,7 +18,17 @@ function Favorites() {
       <div className="sticky top-0 p-4 border-b border-border z-50 bg-background">
         <h1 className="text-2xl font-bold">Favorites</h1>
       </div>
-      <TrackList tracks={likedTracks} />
+      {likedTracks.length === 0 ? (
+        <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+          <Music2 className="w-12 h-12 text-muted-foreground mb-4" />
+          <h3 className="text-lg font-medium mb-2">No tracks added yet</h3>
+          <p className="text-sm text-muted-foreground">
+            The tracks you click the 'like' button on will be added here.'
+          </p>
+        </div>
+      ) : (
+        <TrackList tracks={likedTracks} />
+      )}
     </main>
   );
 }

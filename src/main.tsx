@@ -4,8 +4,9 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import App from './App.tsx';
 import './index.css';
-import MainTracks from './components/main-tracks.tsx';
-import Favorites from './components/favorites.tsx';
+import Default from './components/mainContent/default/index.tsx';
+import Favorites from './components/mainContent/favorites.tsx';
+import Playlist from './components/mainContent/playlist.tsx';
 
 const router = createBrowserRouter([
   {
@@ -14,9 +15,10 @@ const router = createBrowserRouter([
     children: [
       {
         path: '',
-        element: <MainTracks />,
+        element: <Default />,
       },
       { path: '/favorites', element: <Favorites /> },
+      { path: '/playlist/:playlistId', element: <Playlist /> },
     ],
   },
 ]);

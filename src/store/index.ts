@@ -29,6 +29,12 @@ export interface Track {
   image: string;
   audiodownload_allowed: boolean;
   isLiked: boolean;
+  playlists: number[]; // contains only playlist id
+}
+export interface Playlist {
+  id: number;
+  title: string;
+  description: string;
 }
 
 export type PlayingTrack = Pick<
@@ -54,7 +60,7 @@ interface State {
   currentPlayingTrack: PlayingTrack;
   currentPlayingList: Track[];
   currentPlayTime: number;
-  toggleIsPlaying: () => void;
+  playlists: Playlist[];
   fetchTracks: () => void;
   setCurrentPlayingList: (tracks: Track[]) => void;
   setCurrentPlayingTrack: (track: PlayingTrack) => void;
@@ -63,6 +69,10 @@ interface State {
   playTrack: () => void;
   pauseTrack: () => void;
   toggleIsLiked: (trackId: string) => void;
+  createPlaylist: (playlist: Playlist) => void;
+  deletePlaylist: (playlistId: number) => void;
+  addTrackToPlaylist: (trackId: string, playlistId: number) => void;
+  removeTrackFromPlaylist: (trackId: string, playlistId: number) => void;
 }
 
 export const useStore = create<State>()(
@@ -84,11 +94,7 @@ export const useStore = create<State>()(
         index: -1,
       } as PlayingTrack,
       currentPlayTime: 0,
-      toggleIsPlaying: () => {
-        set(state => {
-          state.isPlaying = !state.isPlaying;
-        });
-      },
+      playlists: [] as Playlist[],
       fetchTracks: async () => {
         set(state => {
           state.error = null;
@@ -105,7 +111,10 @@ export const useStore = create<State>()(
           set(state => {
             results.forEach(({ genre, tracks }) => {
               state.mainTracks[genre] = tracks.map(track =>
-                Object.assign(track, { isLiked: false })
+                Object.assign(track, {
+                  isLiked: false,
+                  playlists: [] as number[],
+                })
               );
             });
           });
@@ -175,6 +184,57 @@ export const useStore = create<State>()(
             state.currentPlayingTrack.isLiked =
               !state.currentPlayingTrack.isLiked;
           }
+        });
+      },
+      createPlaylist: (playlist: Playlist) => {
+        set(state => {
+          state.playlists.push(playlist);
+        });
+      },
+      deletePlaylist: (id: number) => {
+        set(state => {
+          const playlistIndex = state.playlists.findIndex(
+            playlist => playlist.id === id
+          );
+          if (playlistIndex !== -1) {
+            state.playlists.splice(playlistIndex, 1);
+          }
+
+          (genres as ReadonlyArray<(typeof genres)[number]>).forEach(genre => {
+            state.mainTracks[genre].forEach(track => {
+              track.playlists = track.playlists.filter(
+                playlistId => playlistId !== id
+              );
+            });
+          });
+        });
+      },
+      addTrackToPlaylist: (trackId: string, playlistId: number) => {
+        set(state => {
+          (genres as ReadonlyArray<(typeof genres)[number]>).forEach(genre => {
+            const trackIndex = state.mainTracks[genre].findIndex(
+              track => track.id === trackId
+            );
+
+            if (trackIndex !== -1) {
+              state.mainTracks[genre][trackIndex].playlists.push(playlistId);
+            }
+          });
+        });
+      },
+      removeTrackFromPlaylist: (trackId: string, playlistId: number) => {
+        set(state => {
+          (genres as ReadonlyArray<(typeof genres)[number]>).forEach(genre => {
+            const trackIndex = state.mainTracks[genre].findIndex(
+              track => track.id === trackId
+            );
+
+            if (trackIndex !== -1) {
+              state.mainTracks[genre][trackIndex].playlists = state.mainTracks[
+                genre
+              ][trackIndex].playlists.filter(id => playlistId !== id);
+            }
+          });
         });
       },
     }))
