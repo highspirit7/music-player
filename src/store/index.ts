@@ -180,7 +180,8 @@ export const useStore = create<State>()(
             state.currentPlayingList[clickedTrackIndex].isLiked =
               !state.currentPlayingList[clickedTrackIndex].isLiked;
           }
-          if (state.currentPlayingTrack.index > -1) {
+
+          if (state.currentPlayingTrack.id === trackId) {
             state.currentPlayingTrack.isLiked =
               !state.currentPlayingTrack.isLiked;
           }
