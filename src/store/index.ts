@@ -29,7 +29,7 @@ export interface Track {
   image: string;
   audiodownload_allowed: boolean;
   isLiked: boolean;
-  playlists: number[];
+  playlists: number[]; // contains only playlist id
 }
 export interface Playlist {
   id: number;
@@ -70,7 +70,7 @@ interface State {
   pauseTrack: () => void;
   toggleIsLiked: (trackId: string) => void;
   createPlaylist: (playlist: Playlist) => void;
-  deletePlaylist: (id: number) => void;
+  deletePlaylist: (playlistId: number) => void;
   addTrackToPlaylist: (trackId: string, playlistId: number) => void;
   removeTrackFromPlaylist: (trackId: string, playlistId: number) => void;
 }
@@ -193,10 +193,20 @@ export const useStore = create<State>()(
       },
       deletePlaylist: (id: number) => {
         set(state => {
-          const index = state.playlists.findIndex(
+          const playlistIndex = state.playlists.findIndex(
             playlist => playlist.id === id
           );
-          state.playlists.splice(index, 1);
+          if (playlistIndex !== -1) {
+            state.playlists.splice(playlistIndex, 1);
+          }
+
+          (genres as ReadonlyArray<(typeof genres)[number]>).forEach(genre => {
+            state.mainTracks[genre].forEach(track => {
+              track.playlists = track.playlists.filter(
+                playlistId => playlistId !== id
+              );
+            });
+          });
         });
       },
       addTrackToPlaylist: (trackId: string, playlistId: number) => {
@@ -220,16 +230,9 @@ export const useStore = create<State>()(
             );
 
             if (trackIndex !== -1) {
-              const plalylistIdIndex = state.mainTracks[genre][
-                trackIndex
-              ].playlists.findIndex(id => id === playlistId);
-
-              if (plalylistIdIndex !== -1) {
-                state.mainTracks[genre][trackIndex].playlists.splice(
-                  plalylistIdIndex,
-                  1
-                );
-              }
+              state.mainTracks[genre][trackIndex].playlists = state.mainTracks[
+                genre
+              ][trackIndex].playlists.filter(id => playlistId !== id);
             }
           });
         });

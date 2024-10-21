@@ -1,12 +1,12 @@
 import { Pause, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useRef } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Track, useStore } from '@/store';
 import { genres } from '@/lib/const';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import createPlayingTrack from '@/utils/createPlayingTrack';
-import SaveToPlaylistDialog from '@/components/save-to-playlist-dialog';
+import SaveToPlaylistDialog from '@/components/mainContent/default/save-to-playlist-dialog';
 
 export default function TrackCardList({
   tracks,

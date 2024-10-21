@@ -27,7 +27,7 @@ function Favorites() {
           </p>
         </div>
       ) : (
-        <TrackList type="favorites" tracks={likedTracks} />
+        <TrackList tracks={likedTracks} />
       )}
     </main>
   );
