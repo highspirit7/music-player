@@ -21,13 +21,13 @@ function DeletePlaylistDialog({ data }: { data: Playlist }) {
 
   const deletePlaylist = useTracksStore(state => state.deletePlaylist);
 
-  function hanldeClickDelete() {
+  const hanldeClickDelete = () => {
     deletePlaylist(data.id);
 
     if (playlistId == data.id.toString()) {
       navigate('/', { replace: true });
     }
-  }
+  };
 
   return (
     <AlertDialog>

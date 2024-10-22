@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Music2 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 
-import TrackList from '../trackList';
+import TrackList from './trackList';
 import { useTracksStore } from '@/store/useTracksStore';
 
 function Playlist() {

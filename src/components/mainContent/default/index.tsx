@@ -1,5 +1,5 @@
 import { genres } from '@/lib/const';
-import TrackCardList from './track-card-list';
+import TrackCardList from './trackCardList';
 import { useTracksStore } from '@/store/useTracksStore';
 
 function Default() {

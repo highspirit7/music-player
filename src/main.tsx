@@ -5,8 +5,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App.tsx';
 import './index.css';
 import Default from './components/mainContent/default/index.tsx';
-import Favorites from './components/mainContent/favorites.tsx';
-import Playlist from './components/mainContent/playlist.tsx';
+import Favorites from './components/mainContent/others/favorites.tsx';
+import Playlist from './components/mainContent/others/playlist.tsx';
 
 const router = createBrowserRouter([
   {

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Music2 } from 'lucide-react';
 
-import TrackList from '../trackList';
+import TrackList from './trackList';
 import { useTracksStore } from '@/store/useTracksStore';
 
 function Favorites() {

@@ -1,16 +1,10 @@
-import { Heart, Pause, Play, Trash2 } from 'lucide-react';
+import { Pause, Play } from 'lucide-react';
 import { decode } from 'html-entities';
 
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from '@/components/ui/tooltip';
 import { usePlayerStore } from '@/store/usePlayerStore';
-import { useTracksStore } from '@/store/useTracksStore';
 import { Track } from '@/lib/types';
-import { createPlayingTrack, toMinutesAndSeconds } from '@/lib/utils';
+import { createPlayingTrack } from '@/lib/utils';
+import TrackActions from './track-actions';
 
 interface TrackListProps {
   tracks: Track[];
@@ -33,12 +27,8 @@ function TrackList({ tracks, playlistId }: TrackListProps) {
   const setHowlInstance = usePlayerStore(state => state.setHowlInstance);
   const playTrack = usePlayerStore(state => state.playTrack);
   const pauseTrack = usePlayerStore(state => state.pauseTrack);
-  const toggleIsLiked = useTracksStore(state => state.toggleIsLiked);
-  const removeTrackFromPlaylist = useTracksStore(
-    state => state.removeTrackFromPlaylist
-  );
 
-  function handleTrackClick(clickedTrack: Track, index: number) {
+  const handleTrackClick = (clickedTrack: Track, index: number) => {
     if (isPlaying) pauseTrack();
 
     setCurrentPlayTime(0);
@@ -46,12 +36,12 @@ function TrackList({ tracks, playlistId }: TrackListProps) {
     setCurrentPlayingList(tracks);
     setHowlInstance(clickedTrack.audiodownload);
     playTrack();
-  }
+  };
 
-  function handlePlayOrPauseClick() {
+  const handlePlayOrPauseClick = () => {
     if (isPlaying) pauseTrack();
     else playTrack();
-  }
+  };
 
   return (
     <div className="grid gap-4 p-4">
@@ -63,7 +53,7 @@ function TrackList({ tracks, playlistId }: TrackListProps) {
           <div className="relative inline-block cursor-pointer group ">
             <img
               src={track.image}
-              alt="Album cover"
+              alt="album_cover"
               className="w-10 h-10 rounded bg-muted hover:bg-black hover:bg-opacity-50"
             />
             {currentPlayingTrack.id === track.id ? (
@@ -93,43 +83,11 @@ function TrackList({ tracks, playlistId }: TrackListProps) {
               {decode(track.artist_name)}
             </p>
           </div>
-          <div className="flex items-center">
-            <button
-              onClick={() => toggleIsLiked(track.id)}
-              className={`transition-colors ${track.isLiked ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-white'}`}
-            >
-              <Heart
-                className="h-5 w-5"
-                fill={track.isLiked ? 'currentColor' : 'none'}
-              />
-              <span className="sr-only">
-                {track.isLiked ? 'Unlike' : 'Like'}
-              </span>
-            </button>
-            {playlistId && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      className="ml-2 text-muted-foreground hover:text-white transition-colors"
-                      onClick={() =>
-                        removeTrackFromPlaylist(track.id, playlistId)
-                      }
-                    >
-                      <Trash2 className="w-5 h-5" />
-                      <span className="sr-only">Remove from playlist</span>
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Remove from this playlist</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-            <span className="ml-3 text-sm text-muted-foreground">
-              {toMinutesAndSeconds(track.duration)}
-            </span>
-          </div>
+          {playlistId ? (
+            <TrackActions data={track} playlistId={playlistId} />
+          ) : (
+            <TrackActions data={track} />
+          )}
         </div>
       ))}
     </div>
