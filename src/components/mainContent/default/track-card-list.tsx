@@ -1,12 +1,15 @@
-import { Pause, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useRef } from 'react';
+import { Pause, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 
-import { Track, useStore } from '@/store';
-import { genres } from '@/lib/const';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import createPlayingTrack from '@/utils/createPlayingTrack';
 import SaveToPlaylistDialog from '@/components/mainContent/default/save-to-playlist-dialog';
+
+import { usePlayerStore } from '@/store/usePlayerStore';
+import { useTracksStore } from '@/store/useTracksStore';
+import { genres } from '@/lib/const';
+import { Track } from '@/lib/types';
+import { createPlayingTrack } from '@/lib/utils';
 
 export default function TrackCardList({
   tracks,
@@ -19,19 +22,23 @@ export default function TrackCardList({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  const playlists = useStore(state => state.playlists);
-  const isPlaying = useStore(state => state.isPlaying);
-  const currentPlayingList = useStore(state => state.currentPlayingList);
-  const currentPlayingTrack = useStore(state => state.currentPlayingTrack);
+  const playlists = useTracksStore(state => state.playlists);
+  const isPlaying = usePlayerStore(state => state.isPlaying);
+  const currentPlayingList = usePlayerStore(state => state.currentPlayingList);
+  const currentPlayingTrack = usePlayerStore(
+    state => state.currentPlayingTrack
+  );
 
-  const playTrack = useStore(state => state.playTrack);
-  const pauseTrack = useStore(state => state.pauseTrack);
-  const setCurrentPlayingList = useStore(state => state.setCurrentPlayingList);
-  const setCurrentPlayingTrack = useStore(
+  const playTrack = usePlayerStore(state => state.playTrack);
+  const pauseTrack = usePlayerStore(state => state.pauseTrack);
+  const setCurrentPlayingList = usePlayerStore(
+    state => state.setCurrentPlayingList
+  );
+  const setCurrentPlayingTrack = usePlayerStore(
     state => state.setCurrentPlayingTrack
   );
-  const setCurrentPlayTime = useStore(state => state.setCurrentPlayTime);
-  const setHowlInstance = useStore(state => state.setHowlInstance);
+  const setCurrentPlayTime = usePlayerStore(state => state.setCurrentPlayTime);
+  const setHowlInstance = usePlayerStore(state => state.setHowlInstance);
 
   const handleClickArrowButton = (direction: 'left' | 'right') => {
     const container = scrollContainerRef.current;

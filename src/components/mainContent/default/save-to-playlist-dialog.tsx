@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ListPlus } from 'lucide-react';
+import clsx from 'clsx';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -18,8 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Playlist, Track, useStore } from '@/store';
-import clsx from 'clsx';
+
+import { useTracksStore } from '@/store/useTracksStore';
+import { Playlist, Track } from '@/lib/types';
 
 function SaveToPlaylistDialog({
   isOnCard,
@@ -33,7 +35,7 @@ function SaveToPlaylistDialog({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedPlaylistId, setSelectedPlaylistId] = useState<string>('');
 
-  const addTrackToPlaylist = useStore(state => state.addTrackToPlaylist);
+  const addTrackToPlaylist = useTracksStore(state => state.addTrackToPlaylist);
 
   const handleClickSave = () => {
     if (selectedPlaylistId) {

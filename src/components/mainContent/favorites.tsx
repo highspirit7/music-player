@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { Music2 } from 'lucide-react';
 
-import { useStore } from '@/store';
 import TrackList from '../trackList';
+import { useTracksStore } from '@/store/useTracksStore';
 
 function Favorites() {
-  const mainTracks = useStore(state => state.mainTracks);
+  const mainTracks = useTracksStore(state => state.mainTracks);
 
   const likedTracks = useMemo(() => {
     return Object.values(mainTracks)

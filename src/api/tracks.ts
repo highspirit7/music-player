@@ -1,4 +1,4 @@
-import { Track } from '@/store';
+import { Track } from '@/lib/types';
 
 const BASE_URL = 'https://api.jamendo.com/v3.0';
 

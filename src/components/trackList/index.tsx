@@ -1,15 +1,16 @@
 import { Heart, Pause, Play, Trash2 } from 'lucide-react';
 import { decode } from 'html-entities';
 
-import toMinutesAndSeconds from '@/utils/toMinuteAndSeconds';
-import { Track, useStore } from '@/store';
-import createPlayingTrack from '@/utils/createPlayingTrack';
 import {
   TooltipProvider,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from '@/components/ui/tooltip';
+import { usePlayerStore } from '@/store/usePlayerStore';
+import { useTracksStore } from '@/store/useTracksStore';
+import { Track } from '@/lib/types';
+import { createPlayingTrack, toMinutesAndSeconds } from '@/lib/utils';
 
 interface TrackListProps {
   tracks: Track[];
@@ -17,19 +18,23 @@ interface TrackListProps {
 }
 
 function TrackList({ tracks, playlistId }: TrackListProps) {
-  const isPlaying = useStore(state => state.isPlaying);
-  const currentPlayingTrack = useStore(state => state.currentPlayingTrack);
+  const isPlaying = usePlayerStore(state => state.isPlaying);
+  const currentPlayingTrack = usePlayerStore(
+    state => state.currentPlayingTrack
+  );
 
-  const setCurrentPlayTime = useStore(state => state.setCurrentPlayTime);
-  const setCurrentPlayingTrack = useStore(
+  const setCurrentPlayTime = usePlayerStore(state => state.setCurrentPlayTime);
+  const setCurrentPlayingTrack = usePlayerStore(
     state => state.setCurrentPlayingTrack
   );
-  const setCurrentPlayingList = useStore(state => state.setCurrentPlayingList);
-  const setHowlInstance = useStore(state => state.setHowlInstance);
-  const playTrack = useStore(state => state.playTrack);
-  const pauseTrack = useStore(state => state.pauseTrack);
-  const toggleIsLiked = useStore(state => state.toggleIsLiked);
-  const removeTrackFromPlaylist = useStore(
+  const setCurrentPlayingList = usePlayerStore(
+    state => state.setCurrentPlayingList
+  );
+  const setHowlInstance = usePlayerStore(state => state.setHowlInstance);
+  const playTrack = usePlayerStore(state => state.playTrack);
+  const pauseTrack = usePlayerStore(state => state.pauseTrack);
+  const toggleIsLiked = useTracksStore(state => state.toggleIsLiked);
+  const removeTrackFromPlaylist = useTracksStore(
     state => state.removeTrackFromPlaylist
   );
 

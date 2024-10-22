@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import BottomControlBar from '@/components/bottomControlBar';
-import { useStore } from '@/store';
 import LeftSideBar from '@/components/leftSideBar';
+import { useTracksStore } from './store/useTracksStore';
 
 function App() {
-  const fetchTracks = useStore(state => state.fetchTracks);
+  const fetchTracks = useTracksStore(state => state.fetchTracks);
 
   useEffect(() => {
     fetchTracks();

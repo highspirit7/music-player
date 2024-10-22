@@ -11,29 +11,36 @@ import { decode } from 'html-entities';
 
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import toMinutesAndSeconds from '@/utils/toMinuteAndSeconds';
-import { useStore } from '@/store';
-import { getNextIndex, getPrevIndex } from '@/utils/array';
-import createPlayingTrack from '@/utils/createPlayingTrack';
+
+import { usePlayerStore } from '@/store/usePlayerStore';
+import { useTracksStore } from '@/store/useTracksStore';
+import {
+  createPlayingTrack,
+  getNextIndex,
+  getPrevIndex,
+  toMinutesAndSeconds,
+} from '@/lib/utils';
 
 function BottomControlBar() {
   const [volume, setVolume] = useState(0.5);
   const intervalRef = useRef<NodeJS.Timeout>();
 
-  const currentPlayingList = useStore(state => state.currentPlayingList);
-  const currentPlayingTrack = useStore(state => state.currentPlayingTrack);
-  const isPlaying = useStore(state => state.isPlaying);
-  const howlInstance = useStore(state => state.howlInstance);
-  const currentPlayTime = useStore(state => state.currentPlayTime);
+  const currentPlayingList = usePlayerStore(state => state.currentPlayingList);
+  const currentPlayingTrack = usePlayerStore(
+    state => state.currentPlayingTrack
+  );
+  const isPlaying = usePlayerStore(state => state.isPlaying);
+  const howlInstance = usePlayerStore(state => state.howlInstance);
+  const currentPlayTime = usePlayerStore(state => state.currentPlayTime);
 
-  const playTrack = useStore(state => state.playTrack);
-  const pauseTrack = useStore(state => state.pauseTrack);
-  const setCurrentPlayTime = useStore(state => state.setCurrentPlayTime);
-  const setHowlInstance = useStore(state => state.setHowlInstance);
-  const setCurrentPlayingTrack = useStore(
+  const playTrack = usePlayerStore(state => state.playTrack);
+  const pauseTrack = usePlayerStore(state => state.pauseTrack);
+  const setCurrentPlayTime = usePlayerStore(state => state.setCurrentPlayTime);
+  const setHowlInstance = usePlayerStore(state => state.setHowlInstance);
+  const setCurrentPlayingTrack = usePlayerStore(
     state => state.setCurrentPlayingTrack
   );
-  const toggleIsLiked = useStore(state => state.toggleIsLiked);
+  const toggleIsLiked = useTracksStore(state => state.toggleIsLiked);
 
   function handleSkipForwardClick() {
     setCurrentPlayTime(0);

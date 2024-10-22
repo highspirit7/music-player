@@ -10,15 +10,15 @@ import {
 } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { useStore } from '@/store';
+import { useTracksStore } from '@/store/useTracksStore';
 
 function NewPlaylistPopover() {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
-  const playlists = useStore(state => state.playlists);
-  const createPlaylist = useStore(state => state.createPlaylist);
+  const playlists = useTracksStore(state => state.playlists);
+  const createPlaylist = useTracksStore(state => state.createPlaylist);
 
   const handleClickCreate = () => {
     const lastPlaylistId =

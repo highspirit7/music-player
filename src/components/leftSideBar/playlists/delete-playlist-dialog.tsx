@@ -12,13 +12,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Playlist, useStore } from '@/store';
+import { useTracksStore } from '@/store/useTracksStore';
+import { Playlist } from '@/lib/types';
 
 function DeletePlaylistDialog({ data }: { data: Playlist }) {
   const { playlistId } = useParams();
   const navigate = useNavigate();
 
-  const deletePlaylist = useStore(state => state.deletePlaylist);
+  const deletePlaylist = useTracksStore(state => state.deletePlaylist);
 
   function hanldeClickDelete() {
     deletePlaylist(data.id);

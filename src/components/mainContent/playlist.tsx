@@ -2,14 +2,14 @@ import { useMemo } from 'react';
 import { Music2 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 
-import { useStore } from '@/store';
 import TrackList from '../trackList';
+import { useTracksStore } from '@/store/useTracksStore';
 
 function Playlist() {
   const { playlistId } = useParams();
 
-  const mainTracks = useStore(state => state.mainTracks);
-  const playlists = useStore(state => state.playlists);
+  const mainTracks = useTracksStore(state => state.mainTracks);
+  const playlists = useTracksStore(state => state.playlists);
 
   const tracksInPlaylist = useMemo(() => {
     return Object.values(mainTracks)
