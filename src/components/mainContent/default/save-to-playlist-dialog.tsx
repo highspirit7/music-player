@@ -22,6 +22,7 @@ import {
 
 import { useTracksStore } from '@/store/useTracksStore';
 import { Playlist, Track } from '@/lib/types';
+import { useDialog } from '@/hooks/useDialog';
 
 function SaveToPlaylistDialog({
   isOnCard,
@@ -32,7 +33,7 @@ function SaveToPlaylistDialog({
   track: Track;
   playlists: Playlist[];
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, openDialog, closeDialog } = useDialog();
   const [selectedPlaylistId, setSelectedPlaylistId] = useState<string>('');
 
   const addTrackToPlaylist = useTracksStore(state => state.addTrackToPlaylist);
@@ -40,12 +41,15 @@ function SaveToPlaylistDialog({
   const handleClickSave = () => {
     if (selectedPlaylistId) {
       addTrackToPlaylist(track.id, Number(selectedPlaylistId));
-      setIsOpen(false);
+      closeDialog();
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={open => (open ? openDialog() : closeDialog())}
+    >
       <DialogTrigger asChild>
         <button
           className={clsx(
