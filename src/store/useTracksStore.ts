@@ -1,73 +1,22 @@
-import { Howl } from 'howler';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { devtools } from 'zustand/middleware';
 
-import { assertError } from '@/utils/errors';
 import { getTracks } from '@/api/tracks';
+import { assertError } from '@/lib/utils';
 import { genres } from '@/lib/const';
-
-export interface Track {
-  id: string;
-  name: string;
-  duration: number;
-  artist_id: string;
-  artist_name: string;
-  artist_idstr: string;
-  album_name: string;
-  album_id: string;
-  license_ccurl: string;
-  position: number;
-  releasedate: string;
-  album_image: string;
-  audio: string;
-  audiodownload: string;
-  prourl: string;
-  shorturl: string;
-  shareurl: string;
-  waveform: string;
-  image: string;
-  audiodownload_allowed: boolean;
-  isLiked: boolean;
-  playlists: number[]; // contains only playlist id
-}
-export interface Playlist {
-  id: number;
-  title: string;
-  description: string;
-}
-
-export type PlayingTrack = Pick<
-  Track,
-  | 'id'
-  | 'artist_name'
-  | 'name'
-  | 'audiodownload'
-  | 'image'
-  | 'duration'
-  | 'isLiked'
-> & { index: number };
+import { Playlist, Track } from '@/lib/types';
+import { usePlayerStore } from './usePlayerStore';
 
 type MainTracks = {
   [K in (typeof genres)[number]]: Track[];
 };
 
-interface State {
+interface TracksState {
   mainTracks: MainTracks;
-  isPlaying: boolean;
-  howlInstance: Howl | null;
   error: string | null;
-  currentPlayingTrack: PlayingTrack;
-  currentPlayingList: Track[];
-  currentPlayTime: number;
   playlists: Playlist[];
   fetchTracks: () => void;
-  setCurrentPlayingList: (tracks: Track[]) => void;
-  setCurrentPlayingTrack: (track: PlayingTrack) => void;
-  setHowlInstance: (src: string) => void;
-  setCurrentPlayTime: (value: number) => void;
-  playTrack: () => void;
-  pauseTrack: () => void;
   toggleIsLiked: (trackId: string) => void;
   createPlaylist: (playlist: Playlist) => void;
   deletePlaylist: (playlistId: number) => void;
@@ -75,25 +24,11 @@ interface State {
   removeTrackFromPlaylist: (trackId: string, playlistId: number) => void;
 }
 
-export const useStore = create<State>()(
+export const useTracksStore = create<TracksState>()(
   immer(
     devtools(set => ({
       mainTracks: { lofi: [], hiphop: [], pop: [], rock: [] } as MainTracks,
-      isPlaying: false,
-      howlInstance: null,
       error: null,
-      currentPlayingList: [],
-      currentPlayingTrack: {
-        id: '',
-        name: '',
-        artist_name: '',
-        audiodownload: '',
-        image: '',
-        duration: 0,
-        isLiked: false,
-        index: -1,
-      } as PlayingTrack,
-      currentPlayTime: 0,
       playlists: [] as Playlist[],
       fetchTracks: async () => {
         set(state => {
@@ -125,41 +60,6 @@ export const useStore = create<State>()(
           });
         }
       },
-      setCurrentPlayingList: (tracks: Track[]) => {
-        set(state => {
-          state.currentPlayingList = tracks;
-        });
-      },
-      setCurrentPlayingTrack: (track: PlayingTrack) => {
-        set(state => {
-          state.currentPlayingTrack = track;
-        });
-      },
-      setHowlInstance: (src: string) => {
-        set(state => {
-          state.howlInstance = new Howl({
-            src: [src],
-            html5: true,
-          });
-        });
-      },
-      setCurrentPlayTime: (value: number) => {
-        set(state => {
-          state.currentPlayTime = value;
-        });
-      },
-      playTrack: () => {
-        set(state => {
-          state.isPlaying = true;
-          state.howlInstance?.play();
-        });
-      },
-      pauseTrack: () => {
-        set(state => {
-          state.isPlaying = false;
-          state.howlInstance?.pause();
-        });
-      },
       toggleIsLiked: (trackId: string) => {
         set(state => {
           (genres as ReadonlyArray<(typeof genres)[number]>).forEach(genre => {
@@ -173,18 +73,21 @@ export const useStore = create<State>()(
             }
           });
 
-          const clickedTrackIndex = state.currentPlayingList.findIndex(
-            track => track.id === trackId
-          );
-          if (clickedTrackIndex !== -1) {
-            state.currentPlayingList[clickedTrackIndex].isLiked =
-              !state.currentPlayingList[clickedTrackIndex].isLiked;
-          }
+          usePlayerStore.setState(state => {
+            const trackIndex = state.currentPlayingList.findIndex(
+              track => track.id === trackId
+            );
+            if (trackIndex !== -1) {
+              state.currentPlayingList[trackIndex].isLiked =
+                !state.currentPlayingList[trackIndex].isLiked;
+            }
 
-          if (state.currentPlayingTrack.id === trackId) {
-            state.currentPlayingTrack.isLiked =
-              !state.currentPlayingTrack.isLiked;
-          }
+            if (state.currentPlayingTrack.id === trackId) {
+              state.currentPlayingTrack.isLiked =
+                !state.currentPlayingTrack.isLiked;
+            }
+            return state;
+          });
         });
       },
       createPlaylist: (playlist: Playlist) => {

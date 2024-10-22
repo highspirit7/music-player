@@ -1,88 +1,69 @@
-import { useEffect, useRef, useState } from 'react';
-import {
-  Play,
-  Pause,
-  SkipBack,
-  SkipForward,
-  Volume2,
-  Heart,
-} from 'lucide-react';
-import { decode } from 'html-entities';
+import { useEffect, useRef } from 'react';
+import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import toMinutesAndSeconds from '@/utils/toMinuteAndSeconds';
-import { useStore } from '@/store';
-import { getNextIndex, getPrevIndex } from '@/utils/array';
-import createPlayingTrack from '@/utils/createPlayingTrack';
+import VolumeSlider from './volume-slider';
+import TrackInformation from './track-information';
+
+import { usePlayerStore } from '@/store/usePlayerStore';
+
+import {
+  createPlayingTrack,
+  getNextIndex,
+  getPrevIndex,
+  toMinutesAndSeconds,
+} from '@/lib/utils';
+import LikeButton from '../like-button';
 
 function BottomControlBar() {
-  const [volume, setVolume] = useState(0.5);
   const intervalRef = useRef<NodeJS.Timeout>();
 
-  const currentPlayingList = useStore(state => state.currentPlayingList);
-  const currentPlayingTrack = useStore(state => state.currentPlayingTrack);
-  const isPlaying = useStore(state => state.isPlaying);
-  const howlInstance = useStore(state => state.howlInstance);
-  const currentPlayTime = useStore(state => state.currentPlayTime);
+  const currentPlayingList = usePlayerStore(state => state.currentPlayingList);
+  const currentPlayingTrack = usePlayerStore(
+    state => state.currentPlayingTrack
+  );
+  const isPlaying = usePlayerStore(state => state.isPlaying);
+  const howlInstance = usePlayerStore(state => state.howlInstance);
+  const currentPlayTime = usePlayerStore(state => state.currentPlayTime);
 
-  const playTrack = useStore(state => state.playTrack);
-  const pauseTrack = useStore(state => state.pauseTrack);
-  const setCurrentPlayTime = useStore(state => state.setCurrentPlayTime);
-  const setHowlInstance = useStore(state => state.setHowlInstance);
-  const setCurrentPlayingTrack = useStore(
+  const playTrack = usePlayerStore(state => state.playTrack);
+  const pauseTrack = usePlayerStore(state => state.pauseTrack);
+  const setCurrentPlayTime = usePlayerStore(state => state.setCurrentPlayTime);
+  const setHowlInstance = usePlayerStore(state => state.setHowlInstance);
+  const setCurrentPlayingTrack = usePlayerStore(
     state => state.setCurrentPlayingTrack
   );
-  const toggleIsLiked = useStore(state => state.toggleIsLiked);
 
-  function handleSkipForwardClick() {
+  const handleSkipClick = (type: 'back' | 'forward') => {
     setCurrentPlayTime(0);
 
     if (isPlaying) pauseTrack();
 
-    const nextTrackIndex = getNextIndex(
-      currentPlayingList,
-      currentPlayingTrack.index
-    );
+    const newTrackIndex =
+      type === 'back'
+        ? getPrevIndex(currentPlayingList, currentPlayingTrack.index)
+        : getNextIndex(currentPlayingList, currentPlayingTrack.index);
 
-    if (nextTrackIndex >= 0) {
+    if (newTrackIndex >= 0) {
       setCurrentPlayingTrack(
-        createPlayingTrack(currentPlayingList[nextTrackIndex], nextTrackIndex)
+        createPlayingTrack(currentPlayingList[newTrackIndex], newTrackIndex)
       );
-      setHowlInstance(currentPlayingList[nextTrackIndex].audiodownload);
+      setHowlInstance(currentPlayingList[newTrackIndex].audiodownload);
       playTrack();
     }
-  }
+  };
 
-  function handleSkipBackClick() {
-    setCurrentPlayTime(0);
-
-    if (isPlaying) pauseTrack();
-
-    const prevTrackIndex = getPrevIndex(
-      currentPlayingList,
-      currentPlayingTrack.index
-    );
-
-    if (prevTrackIndex >= 0) {
-      setCurrentPlayingTrack(
-        createPlayingTrack(currentPlayingList[prevTrackIndex], prevTrackIndex)
-      );
-      setHowlInstance(currentPlayingList[prevTrackIndex].audiodownload);
-      playTrack();
-    }
-  }
-
-  function onCurrentPlayTimeChange(value: number[]) {
+  const onCurrentPlayTimeChange = (value: number[]) => {
     if (isPlaying) howlInstance?.pause();
 
     setCurrentPlayTime(value[0]);
-  }
+  };
 
-  function onCurrentPlayTimeCommit(value: number[]) {
+  const onCurrentPlayTimeCommit = (value: number[]) => {
     howlInstance?.seek(value[0]);
     if (isPlaying) howlInstance?.play();
-  }
+  };
 
   useEffect(() => {
     if (howlInstance) {
@@ -106,19 +87,12 @@ function BottomControlBar() {
           playTrack();
         }
       });
-      if (isPlaying) {
-        intervalRef.current = setInterval(() => {
-          setCurrentPlayTime(Math.round(howlInstance.seek()));
-        }, 1000);
-      } else clearInterval(intervalRef.current);
     }
 
     return () => {
       howlInstance?.off('end');
-      clearInterval(intervalRef.current);
     };
   }, [
-    isPlaying,
     howlInstance,
     currentPlayingList,
     setHowlInstance,
@@ -129,31 +103,31 @@ function BottomControlBar() {
   ]);
 
   useEffect(() => {
-    howlInstance?.volume(volume);
-  }, [volume, howlInstance]);
+    if (howlInstance) {
+      if (isPlaying) {
+        intervalRef.current = setInterval(() => {
+          setCurrentPlayTime(Math.round(howlInstance.seek()));
+        }, 1000);
+      } else clearInterval(intervalRef.current);
+    }
+
+    return () => {
+      clearInterval(intervalRef.current);
+    };
+  }, [howlInstance, isPlaying, setCurrentPlayTime]);
 
   if (currentPlayingList.length > 0)
     return (
       <footer className="h-20 border-t bg-stone-700 p-4">
         <div className="grid grid-cols-3 items-center">
-          <div className="flex items-center space-x-4">
-            <img
-              src={currentPlayingTrack.image}
-              alt="Now playing"
-              className="w-12 h-12 rounded bg-muted"
-            />
-            <div>
-              <h3 className="font-medium ">
-                {decode(currentPlayingTrack.name)}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {decode(currentPlayingTrack.artist_name)}
-              </p>
-            </div>
-          </div>
+          <TrackInformation />
           <div className="flex flex-col items-center space-y-2 max-w-md">
             <div className="flex items-center space-x-4">
-              <Button size="icon" variant="ghost" onClick={handleSkipBackClick}>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => handleSkipClick('back')}
+              >
                 <SkipBack className="h-4 w-4" />
                 <span className="sr-only">Previous</span>
               </Button>
@@ -174,7 +148,7 @@ function BottomControlBar() {
               <Button
                 size="icon"
                 variant="ghost"
-                onClick={handleSkipForwardClick}
+                onClick={() => handleSkipClick('forward')}
               >
                 <SkipForward className="h-4 w-4" />
                 <span className="sr-only">Next</span>
@@ -196,30 +170,10 @@ function BottomControlBar() {
               <span className="text-sm text-muted-foreground min-w-[30px]">
                 {toMinutesAndSeconds(currentPlayingTrack.duration)}
               </span>
-              <button
-                onClick={() => toggleIsLiked(currentPlayingTrack.id)}
-                className={`transition-colors ${currentPlayingTrack.isLiked ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-white'}`}
-              >
-                <Heart
-                  className="h-5 w-5"
-                  fill={currentPlayingTrack.isLiked ? 'currentColor' : 'none'}
-                />
-                <span className="sr-only">
-                  {currentPlayingTrack.isLiked ? 'Unlike' : 'Like'}
-                </span>
-              </button>
+              <LikeButton track={currentPlayingTrack} />
             </div>
           </div>
-          <div className="flex items-center space-x-2 justify-self-end">
-            <Volume2 className="h-5 w-5 text-muted-foreground" />
-            <Slider
-              defaultValue={[volume]}
-              max={1}
-              step={0.1}
-              onValueChange={value => setVolume(value[0])}
-              className="w-24"
-            />
-          </div>
+          <VolumeSlider />
         </div>
       </footer>
     );

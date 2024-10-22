@@ -1,9 +1,9 @@
 import { genres } from '@/lib/const';
-import TrackCardList from './track-card-list';
-import { useStore } from '@/store';
+import TrackCardList from './trackCardList';
+import { useTracksStore } from '@/store/useTracksStore';
 
 function Default() {
-  const mainTracks = useStore(state => state.mainTracks);
+  const mainTracks = useTracksStore(state => state.mainTracks);
   return (
     <main className="flex-1 overflow-auto bg-background">
       <div className="sticky top-0 p-4 border-b border-border z-50 bg-background">
