@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 
-import BottomControlBar from '@/components/bottomControlBar';
+import BottomControlBar from '@/components/BottomControlBar';
 import LeftSideBar from '@/components/leftSideBar';
 import { useTracksStore } from './store/useTracksStore';
 
