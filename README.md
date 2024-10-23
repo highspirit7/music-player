@@ -1,50 +1,35 @@
-# React + TypeScript + Vite
+User-friendly music player app
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# How to run this project on your local environment
 
-Currently, two official plugins are available:
+- `npm install`
+- setup .env file based on .env.example file.
+  - Need client id of your application in [Jamendo api](https://devportal.jamendo.com)
+- `npm run dev`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# Features
 
-## Expanding the ESLint configuration
+- display list of songs by 4 genres(royalty-free musics from Jamendo API)
+- bottom track controller
+  - play / pause
+  - skip forward, skip back
+  - like button
+  - volume slider
+- playlists
+  - create a playlist
+  - delete a playlist
+  - add a track to a playlist
+  - remove a track from a playlist
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+_You can only skip tracks in the selected list. For example, if you select any track in 'lofi' list on main page, you can only skip tracks with the 'lofi' list. And the same rule applies to the favorites list(the tracks you like) and any playlist you create._
 
-- Configure the top-level `parserOptions` property like this:
+# Used tech stacks
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+- zustand : https://zustand.docs.pmnd.rs/getting-started/introduction
+- howler : https://howlerjs.com/
+- shacdn/ui : https://ui.shadcn.com/
+- tailwindcss : https://tailwindcss.com/
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+# Deplayed app in production
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+https://tc-music-player.vercel.app/
