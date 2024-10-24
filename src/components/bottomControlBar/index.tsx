@@ -3,8 +3,8 @@ import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import VolumeSlider from './volume-slider';
-import TrackInformation from './track-information';
+import VolumeSlider from '@/components/bottomControlBar/volume-slider';
+import TrackInformation from '@/components/bottomControlBar/track-information';
 
 import { usePlayerStore } from '@/store/usePlayerStore';
 
