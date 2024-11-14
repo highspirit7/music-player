@@ -1,8 +1,8 @@
-import { Heart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Heart } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
-import { Separator } from '@/components/ui/separator';
-import Playlists from './playlists';
+import { Separator } from '@/components/ui/separator'
+import Playlists from './playlists'
 
 function LeftSideBar() {
   return (
@@ -23,7 +23,7 @@ function LeftSideBar() {
       <Separator className="my-4" />
       <Playlists />
     </aside>
-  );
+  )
 }
 
-export default LeftSideBar;
+export default LeftSideBar

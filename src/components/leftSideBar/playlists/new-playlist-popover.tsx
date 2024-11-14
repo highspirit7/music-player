@@ -1,39 +1,34 @@
-import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { useState } from 'react'
+import { Plus } from 'lucide-react'
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { useTracksStore } from '@/store/useTracksStore';
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { useTracksStore } from '@/store/useTracksStore'
 
 function NewPlaylistPopover() {
-  const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [open, setOpen] = useState(false)
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
 
-  const playlists = useTracksStore(state => state.playlists);
-  const createPlaylist = useTracksStore(state => state.createPlaylist);
+  const playlists = useTracksStore(state => state.playlists)
+  const createPlaylist = useTracksStore(state => state.createPlaylist)
 
   const handleClickCreate = () => {
-    const lastPlaylistId =
-      playlists.length === 0 ? 0 : playlists[playlists.length - 1].id;
-    createPlaylist({ id: lastPlaylistId + 1, title, description });
-    setTitle('');
-    setDescription('');
-    setOpen(false);
-  };
+    const lastPlaylistId = playlists.length === 0 ? 0 : playlists[playlists.length - 1].id
+    createPlaylist({ id: lastPlaylistId + 1, title, description })
+    setTitle('')
+    setDescription('')
+    setOpen(false)
+  }
 
   const handleClickCancel = () => {
-    setTitle('');
-    setDescription('');
-    setOpen(false);
-  };
+    setTitle('')
+    setDescription('')
+    setOpen(false)
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -72,24 +67,17 @@ function NewPlaylistPopover() {
             />
           </div>
           <div className="flex justify-between">
-            <Button
-              className="h-6 bg-accent hover:bg-muted"
-              onClick={handleClickCancel}
-            >
+            <Button className="h-6 bg-accent hover:bg-muted" onClick={handleClickCancel}>
               Cancel
             </Button>
-            <Button
-              variant="secondary"
-              className="h-6"
-              onClick={handleClickCreate}
-            >
+            <Button variant="secondary" className="h-6" onClick={handleClickCreate}>
               Create
             </Button>
           </div>
         </div>
       </PopoverContent>
     </Popover>
-  );
+  )
 }
 
-export default NewPlaylistPopover;
+export default NewPlaylistPopover

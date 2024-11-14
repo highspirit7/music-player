@@ -1,15 +1,15 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button'
 
 function ScrollButton({
   direction,
   onClick,
   disabled,
 }: {
-  direction: 'left' | 'right';
-  onClick: () => void;
-  disabled: boolean;
+  direction: 'left' | 'right'
+  onClick: () => void
+  disabled: boolean
 }) {
   return (
     <Button size="icon" onClick={onClick} disabled={disabled}>
@@ -19,7 +19,7 @@ function ScrollButton({
         <ChevronRight className="h-4 w-4" />
       )}
     </Button>
-  );
+  )
 }
 
-export default ScrollButton;
+export default ScrollButton

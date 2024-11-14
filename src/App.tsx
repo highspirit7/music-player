@@ -1,16 +1,16 @@
-import { useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { useEffect } from 'react'
+import { Outlet } from 'react-router-dom'
 
-import BottomControlBar from '@/components/bottomControlBar';
-import LeftSideBar from '@/components/leftSideBar';
-import { useTracksStore } from './store/useTracksStore';
+import BottomControlBar from '@/components/bottomControlBar'
+import LeftSideBar from '@/components/leftSideBar'
+import { useTracksStore } from './store/useTracksStore'
 
 function App() {
-  const fetchTracks = useTracksStore(state => state.fetchTracks);
+  const fetchTracks = useTracksStore(state => state.fetchTracks)
 
   useEffect(() => {
-    fetchTracks();
-  }, [fetchTracks]);
+    fetchTracks()
+  }, [fetchTracks])
 
   return (
     <div className="h-screen flex flex-col">
@@ -22,7 +22,7 @@ function App() {
       </div>
       <BottomControlBar />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

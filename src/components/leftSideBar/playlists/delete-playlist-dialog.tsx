@@ -1,5 +1,5 @@
-import { X } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { X } from 'lucide-react'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import {
   AlertDialog,
@@ -11,23 +11,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { useTracksStore } from '@/store/useTracksStore';
-import { Playlist } from '@/lib/types';
+} from '@/components/ui/alert-dialog'
+import { useTracksStore } from '@/store/useTracksStore'
+import { Playlist } from '@/lib/types'
 
 function DeletePlaylistDialog({ data }: { data: Playlist }) {
-  const { playlistId } = useParams();
-  const navigate = useNavigate();
+  const { playlistId } = useParams()
+  const navigate = useNavigate()
 
-  const deletePlaylist = useTracksStore(state => state.deletePlaylist);
+  const deletePlaylist = useTracksStore(state => state.deletePlaylist)
 
   const hanldeClickDelete = () => {
-    deletePlaylist(data.id);
+    deletePlaylist(data.id)
 
     if (playlistId == data.id.toString()) {
-      navigate('/', { replace: true });
+      navigate('/', { replace: true })
     }
-  };
+  }
 
   return (
     <AlertDialog>
@@ -56,6 +56,6 @@ function DeletePlaylistDialog({ data }: { data: Playlist }) {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
+  )
 }
-export default DeletePlaylistDialog;
+export default DeletePlaylistDialog

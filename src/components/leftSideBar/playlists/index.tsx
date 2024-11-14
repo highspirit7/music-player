@@ -1,12 +1,12 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
 
-import { ScrollArea } from '@/components/ui/scroll-area';
-import DeletePlaylistDialog from './delete-playlist-dialog';
-import NewPlaylistPopover from './new-playlist-popover';
-import { useTracksStore } from '@/store/useTracksStore';
+import { ScrollArea } from '@/components/ui/scroll-area'
+import DeletePlaylistDialog from './delete-playlist-dialog'
+import NewPlaylistPopover from './new-playlist-popover'
+import { useTracksStore } from '@/store/useTracksStore'
 
 function Playlists() {
-  const playlists = useTracksStore(state => state.playlists);
+  const playlists = useTracksStore(state => state.playlists)
 
   return (
     <div>
@@ -28,7 +28,7 @@ function Playlists() {
         </ul>
       </ScrollArea>
     </div>
-  );
+  )
 }
 
-export default Playlists;
+export default Playlists
