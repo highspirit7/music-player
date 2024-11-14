@@ -1,25 +1,18 @@
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react'
 
-import LikeButton from '@/components/like-button';
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from '@/components/ui/tooltip';
-import { toMinutesAndSeconds } from '@/lib/utils';
-import { Track } from '@/lib/types';
-import { useTracksStore } from '@/store/useTracksStore';
+import LikeButton from '@/components/like-button'
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { toMinutesAndSeconds } from '@/lib/utils'
+import { Track } from '@/lib/types'
+import { useTracksStore } from '@/store/useTracksStore'
 
 interface TrackActionsProps {
-  data: Track;
-  playlistId?: number;
+  data: Track
+  playlistId?: number
 }
 
 function TrackActions({ data, playlistId }: TrackActionsProps) {
-  const removeTrackFromPlaylist = useTracksStore(
-    state => state.removeTrackFromPlaylist
-  );
+  const removeTrackFromPlaylist = useTracksStore(state => state.removeTrackFromPlaylist)
 
   return (
     <div className="flex items-center">
@@ -46,7 +39,7 @@ function TrackActions({ data, playlistId }: TrackActionsProps) {
         {toMinutesAndSeconds(data.duration)}
       </span>
     </div>
-  );
+  )
 }
 
-export default TrackActions;
+export default TrackActions

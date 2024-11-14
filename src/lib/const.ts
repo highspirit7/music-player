@@ -1,1 +1,1 @@
-export const genres = ['lofi', 'hiphop', 'pop', 'rock'] as const;
+export const genres = ['lofi', 'hiphop', 'pop', 'rock'] as const

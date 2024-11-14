@@ -1,10 +1,11 @@
-import { Heart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { memo } from 'react'
+import { Heart } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
-import { Separator } from '@/components/ui/separator';
-import Playlists from './playlists';
+import { Separator } from '@/components/ui/separator'
+import Playlists from './playlists'
 
-function LeftSideBar() {
+const LeftSideBar = memo(function LeftSideBar() {
   return (
     <aside className="w-56 p-6 hidden md:block border-r border-border">
       <h1 className="text-2xl font-bold mb-6 text-primary">
@@ -23,7 +24,7 @@ function LeftSideBar() {
       <Separator className="my-4" />
       <Playlists />
     </aside>
-  );
-}
+  )
+})
 
-export default LeftSideBar;
+export default LeftSideBar

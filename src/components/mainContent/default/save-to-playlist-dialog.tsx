@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { ListPlus } from 'lucide-react';
-import clsx from 'clsx';
+import { useState } from 'react'
+import { ListPlus } from 'lucide-react'
+import clsx from 'clsx'
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -11,45 +11,42 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@/components/ui/dialog'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/ui/select'
 
-import { useTracksStore } from '@/store/useTracksStore';
-import { Playlist, Track } from '@/lib/types';
-import { useDialog } from '@/hooks/useDialog';
+import { useTracksStore } from '@/store/useTracksStore'
+import { Playlist, Track } from '@/lib/types'
+import { useDialog } from '@/hooks/useDialog'
 
 function SaveToPlaylistDialog({
   isOnCard,
   track,
   playlists,
 }: {
-  isOnCard: boolean;
-  track: Track;
-  playlists: Playlist[];
+  isOnCard: boolean
+  track: Track
+  playlists: Playlist[]
 }) {
-  const { isOpen, openDialog, closeDialog } = useDialog();
-  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string>('');
+  const { isOpen, openDialog, closeDialog } = useDialog()
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string>('')
 
-  const addTrackToPlaylist = useTracksStore(state => state.addTrackToPlaylist);
+  const addTrackToPlaylist = useTracksStore(state => state.addTrackToPlaylist)
 
   const handleClickSave = () => {
     if (selectedPlaylistId) {
-      addTrackToPlaylist(track.id, Number(selectedPlaylistId));
-      closeDialog();
+      addTrackToPlaylist(track.id, Number(selectedPlaylistId))
+      closeDialog()
     }
-  };
+  }
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={open => (open ? openDialog() : closeDialog())}
-    >
+    <Dialog open={isOpen} onOpenChange={open => (open ? openDialog() : closeDialog())}>
       <DialogTrigger asChild>
         <button
           className={clsx(
@@ -68,7 +65,7 @@ function SaveToPlaylistDialog({
             'rounded-full',
             {
               'opacity-0': isOnCard,
-            }
+            },
           )}
           title="Click to save to playlist"
         >
@@ -77,9 +74,7 @@ function SaveToPlaylistDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="flex justify-between items-center">
-            Save to Playlist
-          </DialogTitle>
+          <DialogTitle className="flex justify-between items-center">Save to Playlist</DialogTitle>
           <DialogDescription>
             {`Choose a playlist to save "${track.name}" by ${track.artist_name}`}
           </DialogDescription>
@@ -99,17 +94,13 @@ function SaveToPlaylistDialog({
           </Select>
         </div>
         <DialogFooter>
-          <Button
-            type="submit"
-            onClick={handleClickSave}
-            disabled={!selectedPlaylistId}
-          >
+          <Button type="submit" onClick={handleClickSave} disabled={!selectedPlaylistId}>
             Save
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
 
-export default SaveToPlaylistDialog;
+export default SaveToPlaylistDialog
