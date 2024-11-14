@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { memo } from 'react'
 import { Plus } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -8,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { useTracksStore } from '@/store/useTracksStore'
 
-function NewPlaylistPopover() {
+const NewPlaylistPopover = memo(function NewPlaylistPopover() {
   const [open, setOpen] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -78,6 +79,6 @@ function NewPlaylistPopover() {
       </PopoverContent>
     </Popover>
   )
-}
+})
 
 export default NewPlaylistPopover

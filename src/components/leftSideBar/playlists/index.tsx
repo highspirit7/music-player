@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { memo } from 'react'
 
 import { ScrollArea } from '@/components/ui/scroll-area'
 import DeletePlaylistDialog from './delete-playlist-dialog'
@@ -31,4 +32,4 @@ function Playlists() {
   )
 }
 
-export default Playlists
+export default memo(Playlists)

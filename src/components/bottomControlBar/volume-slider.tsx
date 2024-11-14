@@ -1,9 +1,9 @@
 import { Volume2, VolumeOff } from 'lucide-react'
 import { Slider } from '@/components/ui/slider'
-import { useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import { usePlayerStore } from '@/store/usePlayerStore'
 
-function VolumeSlider() {
+const VolumeSlider = memo(function VolumeSlider() {
   const [volume, setVolume] = useState(0.5)
   const volumeCopy = useRef(0)
   const howlInstance = usePlayerStore(state => state.howlInstance)
@@ -37,6 +37,6 @@ function VolumeSlider() {
       />
     </div>
   )
-}
+})
 
 export default VolumeSlider
